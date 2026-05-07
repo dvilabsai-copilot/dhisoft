@@ -21,7 +21,19 @@ const features = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#f8fbff] via-[#eef6ff] to-white px-5 pb-20 pt-6 md:pb-28">
+      <section className="relative overflow-hidden px-5 pb-20 pt-6 md:pb-28">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/images/cloud-bg.avif')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-white/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-200/20 via-sky-100/10 to-white/40" />
+        <div className="absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-white to-transparent" />
         <FloatingObjects />
         <nav className="glass relative z-10 mx-auto flex max-w-7xl items-center justify-between rounded-full px-5 py-3">
           <div className="flex items-center gap-2 font-bold">

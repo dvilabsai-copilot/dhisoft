@@ -162,10 +162,10 @@ export default function DashboardMock() {
     return () => media.removeEventListener('change', update);
   }, []);
 
-  const arcOffsets = [36, 18, 2, -18, 2, 18, 36];
-  const scales = [0.86, 0.94, 1.02, 1.1, 1.02, 0.94, 0.86];
-  const opacity = [0.55, 0.75, 0.95, 1, 0.95, 0.75, 0.55];
-  const tilts = [-12, -7, -3, 2, 6, 10, 14];
+  const arcOffsets = [48, 26, 8, -12, 8, 26, 48];
+  const scales = [0.88, 0.95, 1.02, 1.08, 1.02, 0.95, 0.88];
+  const opacity = [0.7, 0.82, 0.95, 1, 0.95, 0.82, 0.7];
+  const tilts = [-13, -8, -4, 0, 4, 8, 13];
   const duplicatedCards = [...CARD_RAIL, ...CARD_RAIL];
 
   return (
@@ -173,22 +173,10 @@ export default function DashboardMock() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: 'easeOut' }}
-      className="relative mx-auto flex h-[520px] w-full max-w-[1600px] items-center overflow-hidden rounded-[48px]"
+      className="relative mx-auto flex h-[620px] w-full max-w-[1600px] items-center overflow-hidden rounded-[32px] bg-transparent"
     >
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: "url('/images/cloud-bg.avif')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 bg-white/5" />
-      <div className="absolute bottom-0 h-32 w-full bg-gradient-to-t from-white/40 to-transparent" />
-
       <motion.div
-        className="relative z-10 flex w-max items-center gap-12 px-10 md:gap-14 md:px-16 will-change-transform"
+        className="relative z-10 flex w-max translate-y-8 items-center gap-16 px-10 md:gap-20 md:px-16 will-change-transform"
         animate={{ x: ['0%', '-50%'] }}
         transition={{ duration: isMobile ? 58 : 42, repeat: Infinity, ease: 'linear' }}
       >
@@ -201,7 +189,7 @@ export default function DashboardMock() {
           return (
             <motion.div
               key={`${item.id}-${index}`}
-              className={`relative h-[245px] w-[180px] shrink-0 overflow-hidden rounded-[28px] p-4 shadow-[0_38px_90px_rgba(15,23,42,0.14),0_14px_32px_rgba(148,163,184,0.22)] ${item.bg}`}
+              className={`relative h-[260px] w-[190px] shrink-0 overflow-hidden rounded-[28px] p-4 shadow-[0_38px_90px_rgba(15,23,42,0.14),0_14px_32px_rgba(148,163,184,0.22)] ${item.bg}`}
               style={{
                 rotateZ: `${tilt}deg`,
                 scale,
@@ -225,8 +213,6 @@ export default function DashboardMock() {
         })}
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/30 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/30 to-transparent" />
     </motion.div>
   );
 }
