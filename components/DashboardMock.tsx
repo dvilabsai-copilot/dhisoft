@@ -162,10 +162,10 @@ export default function DashboardMock() {
     return () => media.removeEventListener('change', update);
   }, []);
 
-  const arcOffsets = [48, 26, 8, -12, 8, 26, 48];
-  const scales = [0.88, 0.95, 1.02, 1.08, 1.02, 0.95, 0.88];
-  const opacity = [0.7, 0.82, 0.95, 1, 0.95, 0.82, 0.7];
-  const tilts = [-13, -8, -4, 0, 4, 8, 13];
+  const arcOffsets = [54, 30, 10, -8, 10, 30, 54];
+  const scales = [0.82, 0.9, 1, 1.08, 1, 0.9, 0.82];
+  const opacity = [0.45, 0.65, 0.9, 1, 0.9, 0.65, 0.45];
+  const tilts = [-14, -9, -4, 0, 4, 9, 14];
   const duplicatedCards = [...CARD_RAIL, ...CARD_RAIL];
 
   return (
@@ -173,12 +173,16 @@ export default function DashboardMock() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: 'easeOut' }}
-      className="relative mx-auto flex h-[620px] w-full max-w-[1600px] items-center overflow-hidden rounded-[32px] bg-transparent"
+      className="relative flex h-[440px] w-full max-w-none items-center overflow-hidden"
+      style={{
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+        maskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+      }}
     >
       <motion.div
-        className="relative z-10 flex w-max translate-y-8 items-center gap-16 px-10 md:gap-20 md:px-16 will-change-transform"
+        className="relative z-10 flex h-full w-max -translate-y-4 items-center gap-16 will-change-transform md:gap-20"
         animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: isMobile ? 58 : 42, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: isMobile ? 64 : 46, repeat: Infinity, ease: 'linear' }}
       >
         {duplicatedCards.map((item, index) => {
           const arcY = arcOffsets[index % arcOffsets.length];
@@ -189,7 +193,7 @@ export default function DashboardMock() {
           return (
             <motion.div
               key={`${item.id}-${index}`}
-              className={`relative h-[260px] w-[190px] shrink-0 overflow-hidden rounded-[28px] p-4 shadow-[0_38px_90px_rgba(15,23,42,0.14),0_14px_32px_rgba(148,163,184,0.22)] ${item.bg}`}
+              className={`relative h-[250px] w-[185px] shrink-0 overflow-hidden rounded-[28px] p-4 shadow-[0_38px_90px_rgba(15,23,42,0.14),0_14px_32px_rgba(148,163,184,0.22)] ${item.bg}`}
               style={{
                 rotateZ: `${tilt}deg`,
                 scale,
@@ -212,7 +216,6 @@ export default function DashboardMock() {
           );
         })}
       </motion.div>
-
     </motion.div>
   );
 }

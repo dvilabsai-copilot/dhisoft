@@ -88,7 +88,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="relative z-10 mx-auto mt-16 max-w-7xl">
+        <div className="relative left-1/2 z-10 mt-6 w-screen -translate-x-1/2 md:mt-8">
           <DashboardMock />
         </div>
       </section>
