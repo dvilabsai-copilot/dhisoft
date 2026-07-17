@@ -1,0 +1,2 @@
+import { adminRequest, sameOrigin } from '@/lib/admin-auth';
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) { const denied = sameOrigin(request); if (denied) return denied; const { id } = await context.params; return adminRequest(`/admin/leads/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: await request.text() }); }
