@@ -1,0 +1,10 @@
+'use client';
+
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function AdminLoginPage() {
+  const router = useRouter(); const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [error, setError] = useState(''); const [pending, setPending] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setPending(true); setError(''); try { const response = await fetch('/api/admin/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }); const body: unknown = await response.json().catch(() => null); if (!response.ok) throw new Error(body && typeof body === 'object' && typeof (body as Record<string, unknown>).message === 'string' ? (body as Record<string, string>).message : 'Unable to sign in.'); router.push('/admin/content'); router.refresh(); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Unable to sign in.'); } finally { setPending(false); } }
+  return <main className="min-h-screen bg-slate-100 px-5 py-20"><form onSubmit={submit} className="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-sm"><p className="text-sm font-semibold text-blue-600">DhiSoft CMS</p><h1 className="mt-2 text-3xl font-bold text-slate-950">Admin sign in</h1><label className="mt-8 block text-sm font-medium text-slate-700">Email<input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5" /></label><label className="mt-4 block text-sm font-medium text-slate-700">Password<input required type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5" /></label><button disabled={pending} className="mt-6 w-full rounded-full bg-slate-950 px-5 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Signing in…' : 'Sign in'}</button>{error && <p role="alert" className="mt-4 text-sm text-red-600">{error}</p>}</form></main>;
+}

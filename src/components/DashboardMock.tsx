@@ -1,10 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Bot, CheckCircle, ShieldCheck, Sparkles } from 'lucide-react';
 
+type DashboardValues = { revenue: string; revenueTarget: string; uptime: string; dataPoints: string; growth: string };
+const DashboardValuesContext = createContext<DashboardValues | null>(null);
+function useDashboardValues(): DashboardValues { return useContext(DashboardValuesContext) ?? { revenue: '$4,900', revenueTarget: '$10,000 target', uptime: '99.9%', dataPoints: '520k+', growth: '49%' }; }
+
 function CardRevenue() {
+  const values = useDashboardValues();
   return (
     <div className="flex h-full flex-col justify-between">
       <div className="flex items-center justify-between">
@@ -12,8 +17,8 @@ function CardRevenue() {
         <Activity className="h-3.5 w-3.5 text-green-400" />
       </div>
       <div>
-        <p className="text-2xl font-bold text-slate-900">$4,900</p>
-        <p className="text-[10px] text-slate-400">/ $10,000 target</p>
+        <p className="text-2xl font-bold text-slate-900">{values.revenue}</p>
+        <p className="text-[10px] text-slate-400">/ {values.revenueTarget}</p>
       </div>
       <div className="space-y-1">
         {[['Starter', '$580'], ['Standard', '$860'], ['Premium', '$320']].map(([plan, val]) => (
@@ -65,6 +70,7 @@ function CardDataTraining() {
 }
 
 function CardPerformance() {
+  const values = useDashboardValues();
   return (
     <div className="flex h-full flex-col justify-between bg-slate-950 text-white">
       <div className="flex items-center justify-between">
@@ -72,7 +78,7 @@ function CardPerformance() {
         <Activity className="h-3.5 w-3.5 text-green-400" />
       </div>
       <div>
-        <p className="text-3xl font-bold">49%</p>
+        <p className="text-3xl font-bold">{values.growth}</p>
         <p className="text-[10px] text-green-400">Business growth</p>
       </div>
       <div className="flex flex-wrap gap-1">
@@ -108,12 +114,13 @@ function CardCalendar() {
 }
 
 function CardIntelligence() {
+  const values = useDashboardValues();
   return (
     <div className="flex h-full flex-col justify-between">
       <p className="text-[10px] font-semibold text-slate-500">Platform</p>
       <p className="text-xs font-bold leading-tight text-slate-900">Intelligence in<br />Every Decision</p>
       <div>
-        <p className="text-2xl font-bold text-slate-900">520k+</p>
+        <p className="text-2xl font-bold text-slate-900">{values.dataPoints}</p>
         <p className="text-[10px] text-slate-400">Data Points</p>
       </div>
       <div className="flex flex-wrap gap-1">
@@ -126,11 +133,12 @@ function CardIntelligence() {
 }
 
 function CardAgent() {
+  const values = useDashboardValues();
   return (
     <div className="flex h-full flex-col justify-between bg-slate-950 text-white">
       <div className="flex items-center gap-1.5">
         <ShieldCheck className="h-3.5 w-3.5 text-cyan-300" />
-        <p className="text-[10px] text-slate-300">API Uptime 99.9%</p>
+        <p className="text-[10px] text-slate-300">API Uptime {values.uptime}</p>
       </div>
       <div className="my-2 flex flex-1 flex-col items-center justify-center gap-1 overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-slate-800">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-lg font-bold text-white">A</div>
@@ -151,7 +159,7 @@ const CARD_RAIL = [
   { id: 'integrations', Component: CardCalendar, bg: 'bg-white' }
 ];
 
-export default function DashboardMock() {
+export default function DashboardMock({ values }: { values: DashboardValues }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -169,6 +177,7 @@ export default function DashboardMock() {
   const duplicatedCards = [...CARD_RAIL, ...CARD_RAIL];
 
   return (
+    <DashboardValuesContext.Provider value={values}>
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
@@ -217,5 +226,6 @@ export default function DashboardMock() {
         })}
       </motion.div>
     </motion.div>
+    </DashboardValuesContext.Provider>
   );
 }
