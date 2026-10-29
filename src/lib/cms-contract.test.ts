@@ -33,4 +33,11 @@ describe('CMS contract boundary', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
     await expect(getHomeContent()).resolves.toEqual(defaultHomeContent);
   });
+
+  it('uses the redesigned seed when a legacy CMS document is still published', async () => {
+    const legacy = structuredClone(defaultHomeContent);
+    delete legacy.portfolio;
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ key: 'home', version: 2, publishedAt: null, content: legacy }), { status: 200 })));
+    await expect(getHomeContent()).resolves.toEqual(defaultHomeContent);
+  });
 });

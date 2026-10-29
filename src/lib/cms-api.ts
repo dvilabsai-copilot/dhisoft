@@ -20,7 +20,14 @@ async function fetchJson(url: string): Promise<unknown> {
 export async function getHomeResponse(): Promise<PublicHomeResponse> {
   try {
     const payload = await fetchJson(`${apiBaseUrl()}/public/cms/home`);
-    if (isPublicHomeResponse(payload)) return payload;
+    if (isPublicHomeResponse(payload)) {
+      // Older published documents predate the portfolio model and would otherwise
+      // make the redesigned site silently regress to the travel-only homepage.
+      if (!payload.content.portfolio) {
+        return { ...payload, content: defaultHomeContent };
+      }
+      return payload;
+    }
     console.warn('CMS homepage response failed validation; using fallback content.');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown CMS error';

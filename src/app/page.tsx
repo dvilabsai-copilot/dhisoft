@@ -8,5 +8,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  return <HomePageClient content={await getHomeContent()} />;
+  const content = await getHomeContent();
+  return <HomePageClient content={content} />;
 }
