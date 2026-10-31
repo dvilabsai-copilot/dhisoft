@@ -272,31 +272,33 @@ export const defaultHomeContent: HomeContent = {
         videoUrl: "/media/projects/community-project-demo.mp4",
         githubUrl: "https://github.com/kkversile/mortgage-uwa-v0.1",
       },
-      {
-        key: "commerce-api",
-        slug: "commerce-api",
-        title: "InfinityDesignz Commerce API",
-        eyebrow: "Commerce",
-        category: "API platform",
-        shortDescription:
-          "A modular commerce API for catalogue, merchandising, orders and delivery.",
-        description:
-          "Products, categories, variants, promotions, coupons, wishlist, cart, orders, payments, delivery and dashboards.",
-        visual: "commerce",
-        stack: ["NestJS", "TypeScript", "REST"],
-        capabilities: [
-          "Modular architecture",
-          "Catalogue APIs",
-          "Order lifecycle",
-        ],
-        status: "API portfolio",
-        featured: false,
-        sortOrder: 60,
-        isActive: true,
-        videoSource: "mp4",
-        videoUrl: "/media/projects/community-project-demo.mp4",
-        githubUrl: "https://github.com/kkversile/api.infinitydesignz",
-      },
+      
+{
+  key: "voya-vendor-platform",
+  slug: "voya-vendor-platform",
+  title: "Voya Vendor Platform",
+  eyebrow: "TRAVEL",
+  category: "B2B PLATFORM",
+  shortDescription:
+    "A unified B2B platform for onboarding travel vendors, managing experiences and powering agent bookings.",
+  description:
+    "Vendor verification, product catalogue, inventory, availability, bookings, fulfilment, payments, settlements, performance and marketplace operations.",
+  visual: "travel",
+  stack: [],
+  capabilities: [
+    "Vendor onboarding",
+    "Experience catalogue",
+    "Booking operations",
+  ],
+  status: "Portfolio system",
+  featured: false,
+  sortOrder: 60,
+  isActive: true,
+ videoSource: "mp4",
+videoUrl: "/media/projects/voya-vendor-platform.mp4",
+liveDemoUrl: "https://demo.dhisoft.in/voya",
+
+},
     ],
   },
   domains: {
