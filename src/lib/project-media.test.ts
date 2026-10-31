@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { defaultHomeContent } from "@/content/default-home-content";
 import {
   parseYouTubeVideoId,
   projectVideoSource,
@@ -23,6 +24,32 @@ const base: CmsProject = {
   sortOrder: 1,
   isActive: true,
 };
+
+describe("portfolio project 06", () => {
+  it("replaces the Commerce API entry with Voya without reusing its shared MP4", () => {
+    const projects = defaultHomeContent.portfolio?.projects ?? [];
+    const project = projects.find((item) => item.sortOrder === 60);
+
+    expect(project).toMatchObject({
+      key: "voya-vendor-platform",
+      title: "Voya Vendor Platform",
+      eyebrow: "Travel",
+      category: "B2B platform",
+      visual: "voya",
+      videoSource: "none",
+      liveDemoUrl: "https://demo.dhisoft.in/voya",
+      capabilities: [
+        "Vendor onboarding",
+        "Experience catalogue",
+        "Booking operations",
+      ],
+    });
+    expect(project?.videoUrl).toBeUndefined();
+    expect(project?.githubUrl).toBeUndefined();
+    expect(project && resolveProjectMedia(project).kind).toBe("fallback");
+    expect(projects.some((item) => item.key === "commerce-api")).toBe(false);
+  });
+});
 
 describe("project media contract", () => {
   it("parses supported YouTube URL shapes and rejects arbitrary URLs", () => {
