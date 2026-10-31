@@ -40,7 +40,90 @@ function CommercePreview() {
   return <AppChrome><div className="min-h-[260px] bg-slate-50 p-5"><div className="flex items-center justify-between"><div><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-teal-600">Commerce API</p><h4 className="mt-1 text-base font-bold text-slate-900">Catalogue health</h4></div><span className="rounded-full bg-teal-50 px-2 py-1 text-[9px] font-semibold text-teal-600">REST / v1</span></div><div className="mt-5 grid gap-3 sm:grid-cols-[1.1fr_.9fr]"><div className="rounded-xl border border-slate-200 bg-white p-3"><div className="flex items-center justify-between text-[9px] text-slate-500"><span>Products by category</span><span className="text-teal-600">This month</span></div><div className="mt-5 flex h-20 items-end gap-2">{['42%','68%','54%','86%','73%','92%','81%'].map((height, index) => <div key={height} className="flex flex-1 flex-col items-center gap-1"><span className="w-full rounded-t-md bg-gradient-to-t from-teal-500 to-cyan-300" style={{ height }} /><span className="text-[7px] text-slate-400">{index + 1}</span></div>)}</div></div><div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-[9px] text-slate-500">Order lifecycle</p><div className="mt-3 space-y-2">{['Catalogue', 'Cart', 'Payment', 'Delivery'].map((item, index) => <div key={item} className="flex items-center gap-2 text-[9px] text-slate-600"><span className={`h-2 w-2 rounded-full ${index < 3 ? 'bg-teal-500' : 'bg-slate-200'}`} />{item}<span className="ml-auto text-[8px] text-slate-400">{index < 3 ? 'ok' : 'next'}</span></div>)}</div></div></div></div></AppChrome>;
 }
 
-const previews: Record<string, () => React.ReactNode> = { rural: RuralPreview, rainwood: RainwoodPreview, community: CommunityPreview, travel: TravelPreview, mortgage: MortgagePreview, commerce: CommercePreview };
+function VoyaVendorPreview() {
+  const workflows = [
+    { label: "Vendor onboarding", stage: "Verification" },
+    { label: "Experience catalogue", stage: "Listings" },
+    { label: "Booking operations", stage: "Fulfilment" },
+  ];
+
+  return (
+    <AppChrome>
+      <div
+        className="min-h-[260px] bg-slate-50 p-4 sm:p-5"
+        aria-label="Illustrative Voya vendor workspace preview"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-700 text-[10px] font-bold tracking-wider text-white">
+              V
+            </span>
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-indigo-600">
+                Voya vendor platform
+              </p>
+              <h4 className="text-sm font-bold text-slate-900">Vendor workspace</h4>
+            </div>
+          </div>
+          <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-[9px] font-semibold text-indigo-700">
+            B2B travel
+          </span>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-[1.15fr_.85fr]">
+          <div className="rounded-xl border border-slate-200 bg-white p-3.5">
+            <div className="flex items-center gap-2 text-[10px] font-semibold text-slate-700">
+              <Users className="h-3.5 w-3.5 text-indigo-600" />
+              Vendor operations
+            </div>
+            <div className="mt-3 space-y-2">
+              {workflows.map((workflow) => (
+                <div
+                  key={workflow.label}
+                  className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-2"
+                >
+                  <span className="text-[9px] font-medium text-slate-700">
+                    {workflow.label}
+                  </span>
+                  <span className="text-[8px] text-slate-500">
+                    {workflow.stage}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-3.5">
+            <div className="flex items-center gap-2 text-[10px] font-semibold text-slate-700">
+              <Package className="h-3.5 w-3.5 text-indigo-600" />
+              Marketplace tools
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {["Inventory", "Availability", "Payments", "Settlements"].map(
+                (tool) => (
+                  <div
+                    key={tool}
+                    className="grid min-h-12 place-items-center rounded-lg border border-indigo-100 bg-indigo-50/60 p-1.5 text-center text-[9px] font-medium text-indigo-800"
+                  >
+                    {tool}
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </AppChrome>
+  );
+}
+
+const previews: Record<string, () => React.ReactNode> = {
+  rural: RuralPreview,
+  rainwood: RainwoodPreview,
+  community: CommunityPreview,
+  travel: TravelPreview,
+  mortgage: MortgagePreview,
+  commerce: CommercePreview,
+  voya: VoyaVendorPreview,
+};
 
 export default function ProductPreview({ project }: { project: CmsProject }) {
   if (project.posterImage) return <div className="overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-2xl"><img src={project.posterImage} alt={`${project.title} application preview`} className="aspect-[16/9] w-full object-cover" loading="lazy" /></div>;
