@@ -294,14 +294,68 @@ export const defaultHomeContent: HomeContent = {
   featured: false,
   sortOrder: 60,
   isActive: true,
- videoSource: "mp4",
-videoUrl: "/media/projects/voya-vendor-platform.mp4",
-liveDemoUrl: "https://demo.dhisoft.in/voya",
+ 
+  videoSource: "mp4",
+  videoUrl: "/media/projects/voya-vendor-platform.mp4",
+  liveDemoUrl: "https://demo.dhisoft.in/voya",
 
 },
+      {
+        key: "yes-we-care",
+        slug: "yes-we-care",
+        title: "Yes We Care",
+        eyebrow: "HEALTHCARE",
+        category: "CARE SERVICES WEBSITE",
+        shortDescription:
+          "A comprehensive healthcare and personal assistance website connecting individuals, families and organisations with compassionate, coordinated care and support services.",
+        description:
+          "An integrated service experience covering hospital assistance, home care, elder care, pre- and post-operative support, travel companionship, healthcare concierge, corporate care programmes and volunteer initiatives.",
+        visual: "community",
+        stack: ["HTML", "CSS", "JavaScript"],
+        capabilities: [
+          "Hospital assistance",
+          "Home & elder care",
+          "Healthcare concierge",
+        ],
+        status: "Portfolio demo",
+        featured: false,
+        sortOrder: 70,
+        isActive: true,
+
+        videoSource: "mp4",
+        videoUrl: "/media/projects/yes-we-care.mp4",
+        liveDemoUrl: "https://demo.dhisoft.in/ywc/index.html",
+      },
+      {
+        key: "yes-we-care-admin",
+        slug: "yes-we-care-admin",
+        title: "Yes We Care Admin Panel",
+        eyebrow: "HEALTHCARE",
+        category: "CARE OPERATIONS ADMIN PANEL",
+        shortDescription:
+          "A centralised administration interface for managing care service enquiries, coordinating assistance requests and supporting day-to-day operations.",
+        description:
+          "An administrative workspace for organising incoming requests, tracking follow-ups and coordinating hospital assistance, home care, elder care and healthcare concierge services.",
+        visual: "community",
+        stack: [],
+        capabilities: [
+          "Service enquiries",
+          "Care coordination",
+          "Admin operations",
+        ],
+        status: "Portfolio demo",
+        featured: false,
+        sortOrder: 80,
+        isActive: true,
+        videoSource: "mp4",
+        videoUrl: "/media/projects/yes-we-care-admin.mp4",
+        liveDemoUrl: "https://demo.dhisoft.in/ywc/admin.html",
+      },
     ],
   },
   domains: {
+
+
     eyebrow: "Where the work applies",
     heading: "Different domains. Familiar engineering problems.",
     items: [
