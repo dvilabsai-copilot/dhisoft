@@ -167,7 +167,11 @@ export default function EditorialHomePageClient({ content }: { content: HomeCont
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<ProjectFilter>("All");
   const [search, setSearch] = useState("");
-  const [selectedKey, setSelectedKey] = useState<string>("");
+ 
+const [selectedKey, setSelectedKey] = useState<string>(
+  "voya-vendor-platform"
+);
+
   const [detailProject, setDetailProject] = useState<CmsProject | null>(null);
   const [playing, setPlaying] = useState<CmsProject | null>(null);
 
@@ -183,7 +187,12 @@ export default function EditorialHomePageClient({ content }: { content: HomeCont
     return text.includes(search.trim().toLowerCase());
   }), [projects, selectedFilter, search]);
   const selectedProject = visibleProjects.find((project) => project.key === selectedKey) ?? visibleProjects[0] ?? null;
-  const featured = projects.find((project) => project.featured) ?? projects[0];
+  
+const featured =
+  projects.find((project) => project.key === "voya-vendor-platform") ??
+  projects.find((project) => project.featured) ??
+  projects[0];
+
 
   useEffect(() => {
     const slug = decodeURIComponent(window.location.hash.replace(/^#project=/, ""));
@@ -288,7 +297,40 @@ export default function EditorialHomePageClient({ content }: { content: HomeCont
                 <div className="ed-stage-top"><span>PROJECT {String(projectIndex(selectedProject) + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")} · {selectedProject.eyebrow}</span><span>{selectedProject.status}</span></div>
                 <ProjectArtwork project={selectedProject} onPlay={setPlaying} />
                 <div className="ed-stage-bottom"><div><h3>{selectedProject.title}</h3><p>{selectedProject.shortDescription}</p></div><ProjectLinks project={selectedProject} onPlay={setPlaying} onDetail={openDetails} compact /></div>
-                <div className="ed-stage-extra"><p>{selectedProject.description}</p><div className="ed-pills">{[...selectedProject.capabilities, ...selectedProject.stack].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div>
+
+<div className="ed-stage-extra">
+  <p>{selectedProject.description}</p>
+
+  <div className="ed-pills">
+    {[...selectedProject.capabilities, ...selectedProject.stack].map(
+      (item) => (
+        <span key={item} className="ed-pill">
+          {item}
+        </span>
+      )
+    )}
+  </div>
+
+  {selectedProject.liveDemoUrl && (
+    <p style={{ marginTop: "16px" }}>
+      <strong>Live Demo: </strong>
+      <a
+        href={selectedProject.liveDemoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          color: "#c34d35",
+          fontWeight: 700,
+          textDecoration: "underline",
+          overflowWrap: "anywhere",
+        }}
+      >
+        {selectedProject.liveDemoUrl}
+      </a>
+    </p>
+  )}
+</div>
+
               </> : <p className="ed-empty">Choose another category to view projects.</p>}
             </div>
           </div>
