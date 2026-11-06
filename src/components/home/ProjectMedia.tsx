@@ -113,11 +113,13 @@ export default function ProjectMedia({
           onError={() => setFailed(true)}
         />
       )}
-      {onPlay && (
-        <button
-          type="button"
-          onClick={() => onPlay(project)}
-          className="project-play"
+      
+{onPlay && (media.kind === "mp4" || media.kind === "youtube") && (
+  <button
+    type="button"
+    onClick={() => onPlay(project)}
+    className="project-play"
+
           aria-label={`Watch ${project.title} demo`}
         >
           <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-slate-950 shadow-lg">
