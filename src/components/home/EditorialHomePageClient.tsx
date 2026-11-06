@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -235,10 +236,25 @@ const featured =
       <div className="ed-topline" aria-hidden="true" />
       <header className="ed-header">
         <div className="ed-container ed-nav">
-          <a className="ed-brand" href="#top" aria-label="DHISOFT homepage">
-            {content.navigation.brandName}<b>.</b>
-            <small>PRODUCTS / PLATFORMS / SYSTEMS</small>
-          </a>
+
+
+<a
+  className="ed-brand ed-brand-logo"
+  href="#top"
+  aria-label="DHISOFT homepage"
+>
+  <span className="ed-header-logo-crop">
+    <Image
+      src="/images/dhisoft-logo.png"
+      alt="DHISOFT"
+      width={625}
+      height={451}
+      priority
+      className="ed-header-logo-image"
+    />
+  </span>
+</a>
+
           <nav className={`ed-nav-links ${mobileNavOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             {navLinks.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileNavOpen(false)}>{link.label}</a>)}
           </nav>
@@ -389,7 +405,22 @@ const featured =
 
       <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><span className="ed-kicker">INDEX 08 / OPEN A CONVERSATION</span><h2>Make something <em>matter.</em></h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
 
-      <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div><a className="ed-brand" href="#top">{content.footer.brandName}<b>.</b></a><p>{content.footer.description}</p></div><div><span className="ed-kicker">EXPLORE</span>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><span className="ed-kicker">ELSEWHERE</span><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${content.footer.email}`}>Email DHISOFT ↗</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
+      <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div>
+      
+<a
+  className="ed-brand ed-brand-logo ed-footer-brand-logo"
+  href="#top"
+  aria-label="DHISOFT homepage"
+>
+  <Image
+    src="/images/dhisoft-full-logo.png"
+    alt="DHISOFT - Engineering the Future, A Doview Holidays Pvt Ltd Company"
+    width={625}
+    height={451}
+  />
+</a>
+
+<p>{content.footer.description}</p></div><div><span className="ed-kicker">EXPLORE</span>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><span className="ed-kicker">ELSEWHERE</span><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${content.footer.email}`}>Email DHISOFT ↗</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
 
       {detailProject && <ProjectDetail key={detailProject.key} project={detailProject} index={projectIndex(detailProject)} total={projects.length} onClose={closeDetails} onPlay={setPlaying} />}
       {playing && <VideoModal project={playing} onClose={() => setPlaying(null)} />}
