@@ -272,34 +272,90 @@ export const defaultHomeContent: HomeContent = {
         videoUrl: "/media/projects/community-project-demo.mp4",
         githubUrl: "https://github.com/kkversile/mortgage-uwa-v0.1",
       },
+      
+{
+  key: "voya-vendor-platform",
+  slug: "voya-vendor-platform",
+  title: "Voya Vendor Platform",
+  eyebrow: "TRAVEL",
+  category: "B2B PLATFORM",
+  shortDescription:
+    "A unified B2B platform for onboarding travel vendors, managing experiences and powering agent bookings.",
+  description:
+    "Vendor verification, product catalogue, inventory, availability, bookings, fulfilment, payments, settlements, performance and marketplace operations.",
+  visual: "travel",
+  stack: [],
+  capabilities: [
+    "Vendor onboarding",
+    "Experience catalogue",
+    "Booking operations",
+  ],
+  status: "Portfolio system",
+  featured: false,
+  sortOrder: 60,
+  isActive: true,
+ 
+  videoSource: "mp4",
+  videoUrl: "/media/projects/voya-vendor-platform.mp4",
+  liveDemoUrl: "https://demo.dhisoft.in/voya",
+
+},
       {
-        key: "commerce-api",
-        slug: "commerce-api",
-        title: "InfinityDesignz Commerce API",
-        eyebrow: "Commerce",
-        category: "API platform",
+        key: "yes-we-care",
+        slug: "yes-we-care",
+        title: "Yes We Care",
+        eyebrow: "HEALTHCARE",
+        category: "CARE SERVICES WEBSITE",
         shortDescription:
-          "A modular commerce API for catalogue, merchandising, orders and delivery.",
+          "A comprehensive healthcare and personal assistance website connecting individuals, families and organisations with compassionate, coordinated care and support services.",
         description:
-          "Products, categories, variants, promotions, coupons, wishlist, cart, orders, payments, delivery and dashboards.",
-        visual: "commerce",
-        stack: ["NestJS", "TypeScript", "REST"],
+          "An integrated service experience covering hospital assistance, home care, elder care, pre- and post-operative support, travel companionship, healthcare concierge, corporate care programmes and volunteer initiatives.",
+        visual: "community",
+        stack: ["HTML", "CSS", "JavaScript"],
         capabilities: [
-          "Modular architecture",
-          "Catalogue APIs",
-          "Order lifecycle",
+          "Hospital assistance",
+          "Home & elder care",
+          "Healthcare concierge",
         ],
-        status: "API portfolio",
+        status: "Portfolio demo",
         featured: false,
-        sortOrder: 60,
+        sortOrder: 70,
+        isActive: true,
+
+        videoSource: "mp4",
+        videoUrl: "/media/projects/yes-we-care.mp4",
+        liveDemoUrl: "https://demo.dhisoft.in/ywc/index.html",
+      },
+      {
+        key: "yes-we-care-admin",
+        slug: "yes-we-care-admin",
+        title: "Yes We Care Admin Panel",
+        eyebrow: "HEALTHCARE",
+        category: "CARE OPERATIONS ADMIN PANEL",
+        shortDescription:
+          "A centralised administration interface for managing care service enquiries, coordinating assistance requests and supporting day-to-day operations.",
+        description:
+          "An administrative workspace for organising incoming requests, tracking follow-ups and coordinating hospital assistance, home care, elder care and healthcare concierge services.",
+        visual: "community",
+        stack: [],
+        capabilities: [
+          "Service enquiries",
+          "Care coordination",
+          "Admin operations",
+        ],
+        status: "Portfolio demo",
+        featured: false,
+        sortOrder: 80,
         isActive: true,
         videoSource: "mp4",
-        videoUrl: "/media/projects/community-project-demo.mp4",
-        githubUrl: "https://github.com/kkversile/api.infinitydesignz",
+        videoUrl: "/media/projects/yes-we-care-admin.mp4",
+        liveDemoUrl: "https://demo.dhisoft.in/ywc/admin.html",
       },
     ],
   },
   domains: {
+
+
     eyebrow: "Where the work applies",
     heading: "Different domains. Familiar engineering problems.",
     items: [
