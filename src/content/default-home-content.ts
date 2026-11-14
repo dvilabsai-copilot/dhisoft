@@ -28,12 +28,12 @@ export const defaultHomeContent: HomeContent = {
   hero: {
     backgroundImage: "/images/cloud-bg.avif",
     badge: "Multi-domain SaaS & product engineering",
-    titlePrefix: "Software for complex",
-    titleHighlight: "business work.",
+    titlePrefix: "Big ideas.",
+    titleHighlight: "Working software.",
     description:
-      "From booking inventory and training outcomes to underwriting queues and commerce APIs, DHISOFT engineers the product, platform and operational logic behind serious business software.",
-    primaryCta: { label: "Explore our work", href: "#work" },
-    secondaryCta: { label: "Discuss a product", href: "#contact" },
+      "A product engineering partner for the systems your business runs on. We connect thoughtful design with the engineering underneath.",
+    primaryCta: { label: "Discuss your project", href: "#contact" },
+    secondaryCta: { label: "Explore our expertise", href: "#capabilities" },
   },
   audiences: [
     "SaaS platforms",

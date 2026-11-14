@@ -219,13 +219,11 @@ const [selectedKey, setSelectedKey] = useState<string>(
     }
   };
 
-  // CMS-managed navigation remains authoritative; editorial-only anchors are additions.
-  const navLinks = [
-    ...content.navigation.links,
-    ...[
-      { label: "Industries", href: "#domains" },
-      { label: "Principles", href: "#principles" },
-    ].filter((candidate) => !content.navigation.links.some((link) => link.href === candidate.href)),
+  const navLinks = content.navigation.links;
+  const heroServices = [
+    { title: "Product design", text: "Make the complex feel clear. Research, workflows and interfaces built around people." },
+    { title: "Software engineering", text: "Bring the whole system together. Frontend, backend, integrations and automation." },
+    { title: "Cloud & delivery", text: "Move from build to business. Deployment, monitoring and a reliable path forward." },
   ];
 
   useEffect(() => {
@@ -255,6 +253,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
 
   return (
     <main className="ed" id="top">
+      <a className="ed-skip" href="#work">Skip to projects</a>
       <div className="ed-topline" aria-hidden="true" />
       <header className="ed-header">
         <div className="ed-container ed-nav">
@@ -271,12 +270,12 @@ const [selectedKey, setSelectedKey] = useState<string>(
         </div>
       </header>
 
-      <section className="ed-hero">
+      <section className="ed-hero ed-hero-blue" aria-label="Product engineering studio">
         <div className="ed-container">
           <div className="ed-hero-grid">
             <div>
               <motion.h1 initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                {content.hero.titlePrefix} <em>{content.hero.titleHighlight}</em>
+                <span>{content.hero.titlePrefix}</span><span>{content.hero.titleHighlight}</span>
               </motion.h1>
               <p className="ed-hero-description">{content.hero.description}</p>
               <div className="ed-actions ed-hero-actions">
@@ -285,8 +284,11 @@ const [selectedKey, setSelectedKey] = useState<string>(
               </div>
             </div>
           </div>
-          <div className="ed-hero-footnote"><span>Software for real operations</span><span>{projects.length} selected projects</span><a href="#work">Explore the work <ArrowRight size={14} aria-hidden="true" /></a></div>
+          <div className="ed-hero-expertise">
+            {heroServices.map((service) => <div key={service.title}><h2>{service.title}</h2><p>{service.text}</p></div>)}
+          </div>
         </div>
+        <div className="ed-hero-close"><div className="ed-container ed-hero-footnote"><span>Design. Build. Launch. Evolve.</span><a href="#work">See all work <ArrowRight size={16} aria-hidden="true" /></a></div></div>
       </section>
 
       <div className="ed-audience"><div className="ed-container ed-audience-inner">{content.audiences.map((item) => <span key={item}>{item}</span>)}</div></div>
@@ -300,7 +302,8 @@ const [selectedKey, setSelectedKey] = useState<string>(
             </div>
             <label className="ed-search"><Search size={16} /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the work" aria-label="Search projects" /></label>
           </div>
-          <div className="ed-work-meta"><span>Choose a project to see its story</span><span role="status" aria-live="polite">{visibleProjects.length} of {projects.length} projects</span></div>
+          <div className="ed-work-meta"><span>Project library</span><span role="status" aria-live="polite">{visibleProjects.length} of {projects.length} projects</span></div>
+          {selectedProject && <label className="ed-mobile-project">Project<select aria-label="Select project" value={selectedProject.key} onChange={(event) => setSelectedKey(event.target.value)}>{visibleProjects.map((project) => <option key={project.key} value={project.key}>{project.title}</option>)}</select></label>}
           <div className="ed-explorer">
             <div className="ed-project-index" aria-label="Project index">
               {visibleProjects.length ? visibleProjects.map((project) => { const poster = projectPoster(project); return <button key={project.key} className={`ed-index-item ${poster ? "has-poster" : ""} ${selectedProject?.key === project.key ? "is-selected" : ""}`} type="button" onClick={() => setSelectedKey(project.key)} aria-pressed={selectedProject?.key === project.key}>
@@ -389,10 +392,10 @@ const [selectedKey, setSelectedKey] = useState<string>(
       </section>
 
       <section id="pricing" className="ed-section">
-        <div className="ed-container ed-pricing-grid"><div><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p><a className="ed-btn ed-btn-primary" href={content.pricing.cta.href}>{content.pricing.cta.label}<ArrowRight size={15} /></a></div><div className="ed-pricing-card"><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
+        <div className="ed-container ed-pricing-grid"><div><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p></div><div className="ed-pricing-card"><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
       </section>
 
-      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Make something <em>matter.</em></h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
+      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Let’s build what’s next.</h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
 
       <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div>
       
