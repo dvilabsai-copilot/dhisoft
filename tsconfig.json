@@ -34,9 +34,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "ywc-api",
-    "ywc-cms",
-    "ywc"
+    "node_modules"
   ]
 }
