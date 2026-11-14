@@ -26,9 +26,9 @@ type ProjectFilter = "All" | "Travel" | "Healthcare" | "SaaS" | "Finance";
 const filters: ProjectFilter[] = ["All", "Travel", "Healthcare", "SaaS", "Finance"];
 const projectPosterByKey: Record<string, string> = {
   "community-events": "/images/projects/community-events.jpg",
-  "voya-vendor-platform": "/images/projects/voya-vendor-platform.jpg",
-  "yes-we-care": "/images/projects/yes-we-care.jpg",
-  "yes-we-care-admin": "/images/projects/yes-we-care-admin.jpg",
+  "voya-vendor-platform": "/images/projects/voya-vendor-platform-pr6.jpg",
+  "yes-we-care": "/images/projects/yes-we-care-pr6.jpg",
+  "yes-we-care-admin": "/images/projects/yes-we-care-admin-pr6.jpg",
 };
 
 function projectPoster(project: CmsProject): string | undefined {
