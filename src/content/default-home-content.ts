@@ -28,8 +28,8 @@ export const defaultHomeContent: HomeContent = {
   hero: {
     backgroundImage: "/images/cloud-bg.avif",
     badge: "Multi-domain SaaS & product engineering",
-    titlePrefix: "We turn complex business workflows into",
-    titleHighlight: "software people can run.",
+    titlePrefix: "Software for complex",
+    titleHighlight: "business work.",
     description:
       "From booking inventory and training outcomes to underwriting queues and commerce APIs, DHISOFT engineers the product, platform and operational logic behind serious business software.",
     primaryCta: { label: "Explore our work", href: "#work" },
@@ -47,7 +47,7 @@ export const defaultHomeContent: HomeContent = {
   ],
   products: {
     eyebrow: "What we build",
-    heading: "Software shaped around the work that matters.",
+    heading: "Software shaped around work.",
     items: [
       {
         key: "saas-platforms",
@@ -85,7 +85,7 @@ export const defaultHomeContent: HomeContent = {
   },
   platform: {
     eyebrow: "The engineering underneath",
-    heading: "One product discipline. Many operating environments.",
+    heading: "One discipline. Many domains.",
     description:
       "The visible product is only one layer. We connect experience design to domain services, data, integrations and delivery so the system holds together after launch.",
     features: [
@@ -126,7 +126,7 @@ export const defaultHomeContent: HomeContent = {
     ],
   },
   pricing: {
-    heading: "Have a workflow that needs software?",
+    heading: "Have a workflow to improve?",
     description:
       "Bring the messy version: spreadsheets, approval chains, disconnected APIs or a product idea that needs a technical shape. We will help find the smallest credible path to a working system.",
     cardLabel: "A good first conversation covers",
@@ -357,7 +357,7 @@ export const defaultHomeContent: HomeContent = {
 
 
     eyebrow: "Where the work applies",
-    heading: "Different domains. Familiar engineering problems.",
+    heading: "Software for complex industries.",
     items: [
       {
         key: "travel",
@@ -422,7 +422,7 @@ export const defaultHomeContent: HomeContent = {
   },
   principles: {
     eyebrow: "Product engineering principles",
-    heading: "The details that make software dependable.",
+    heading: "Dependable by design.",
     description:
       "These are not decorative badges. They are the decisions that keep a workflow product understandable and safe as more users, states and integrations arrive.",
     items: [
@@ -485,7 +485,7 @@ export const defaultHomeContent: HomeContent = {
   engagement: {
     eyebrow: "How we build",
     heading:
-      "A product engineering engagement with a clear next step at every stage.",
+      "Every stage has a clear next step.",
     description:
       "The work stays grounded in the workflow, then gets progressively more real: model, interface, system, deployment and learning.",
     steps: [

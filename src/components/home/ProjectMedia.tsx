@@ -75,7 +75,8 @@ export default function ProjectMedia({
 
   return (
     <div
-      className={`project-media-frame group relative overflow-hidden rounded-[1.4rem] border border-slate-200 bg-slate-950 shadow-[0_24px_70px_rgba(15,23,42,.14)] ${className}`}
+      data-ui="product-demo"
+      className={`project-media-frame group relative overflow-hidden rounded-[1.4rem] border border-slate-200 bg-slate-950 ${className}`}
     >
       {media.kind === "mp4" && (
         <video
@@ -122,7 +123,7 @@ export default function ProjectMedia({
 
           aria-label={`Watch ${project.title} demo`}
         >
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-slate-950 shadow-lg">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-slate-950">
             <Play className="ml-0.5 h-4 w-4 fill-current" />
           </span>
           <span>

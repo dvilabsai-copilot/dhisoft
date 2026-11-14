@@ -13,9 +13,8 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import ContactForm from "@/components/contact/ContactForm";
-import ProductPreview from "@/components/home/ProductPreview";
 import ProjectMedia from "@/components/home/ProjectMedia";
 import VideoModal from "@/components/home/VideoModal";
 import { getCmsIcon } from "@/lib/icon-map";
@@ -25,6 +24,16 @@ import "./editorial-home.css";
 
 type ProjectFilter = "All" | "Travel" | "Healthcare" | "SaaS" | "Finance";
 const filters: ProjectFilter[] = ["All", "Travel", "Healthcare", "SaaS", "Finance"];
+const projectPosterByKey: Record<string, string> = {
+  "community-events": "/images/projects/community-events.jpg",
+  "voya-vendor-platform": "/images/projects/voya-vendor-platform.jpg",
+  "yes-we-care": "/images/projects/yes-we-care.jpg",
+  "yes-we-care-admin": "/images/projects/yes-we-care-admin.jpg",
+};
+
+function projectPoster(project: CmsProject): string | undefined {
+  return project.posterImage || projectPosterByKey[project.key];
+}
 
 function projectGroup(project: CmsProject): Exclude<ProjectFilter, "All"> {
   const description = `${project.key} ${project.slug} ${project.eyebrow} ${project.category}`.toLowerCase();
@@ -78,15 +87,13 @@ function ProjectLinks({
 }
 
 function ProjectArtwork({ project, onPlay }: { project: CmsProject; onPlay: (project: CmsProject) => void }) {
+  const poster = projectPoster(project);
+  const projectWithPoster = poster && poster !== project.posterImage ? { ...project, posterImage: poster } : project;
   return (
     <div className={`ed-artwork ed-artwork-${projectGroup(project).toLowerCase()}`}>
       <span className="ed-artwork-wash" aria-hidden="true" />
       <div className="ed-media-window">
-        <ProjectMedia project={project} onPlay={onPlay} />
-      </div>
-      <div className="ed-artwork-caption">
-        <span>PRODUCT SURFACE / {project.eyebrow}</span>
-        <span>{project.videoSource === "mp4" ? "RECORDED WALKTHROUGH" : "PROJECT PREVIEW"}</span>
+        <ProjectMedia project={projectWithPoster} onPlay={onPlay} />
       </div>
     </div>
   );
@@ -94,14 +101,10 @@ function ProjectArtwork({ project, onPlay }: { project: CmsProject; onPlay: (pro
 
 function ProjectDetail({
   project,
-  index,
-  total,
   onClose,
   onPlay,
 }: {
   project: CmsProject;
-  index: number;
-  total: number;
   onClose: () => void;
   onPlay: (project: CmsProject) => void;
 }) {
@@ -131,11 +134,8 @@ function ProjectDetail({
         <button className="ed-icon-btn ed-detail-close" type="button" onClick={onClose} aria-label="Close project details">
           <X size={20} />
         </button>
-        <div className="ed-project-eyebrow">
-          <span>{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
-          <span>{project.eyebrow} · {project.category}</span>
-        </div>
         <h2>{project.title}</h2>
+        <p className="ed-project-meta">{project.eyebrow} · {project.category}</p>
         <p className="ed-detail-lead">{project.shortDescription}</p>
         <ProjectArtwork project={project} onPlay={onPlay} />
         <p className="ed-detail-description">{project.description}</p>
@@ -155,16 +155,17 @@ function ProjectDetail({
   );
 }
 
-function EditorialSectionIntro({ kicker, title, text }: { kicker: string; title: string; text?: string }) {
+function EditorialSectionIntro({ kicker: _kicker, title, text }: { kicker: string; title: string; text?: string }) {
   return (
     <div className="ed-section-heading">
-      <div><span className="ed-kicker">{kicker}</span><h2>{title}</h2></div>
+      <div><h2>{title}</h2></div>
       {text && <p>{text}</p>}
     </div>
   );
 }
 
 export default function EditorialHomePageClient({ content }: { content: HomeContent }) {
+  const reduceMotion = useReducedMotion();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<ProjectFilter>("All");
   const [search, setSearch] = useState("");
@@ -184,17 +185,11 @@ const [selectedKey, setSelectedKey] = useState<string>(
   const projects = useMemo(() => activeSorted(portfolio.projects), [portfolio.projects]);
   const visibleProjects = useMemo(() => projects.filter((project) => {
     if (selectedFilter !== "All" && projectGroup(project) !== selectedFilter) return false;
-    const text = [project.title, project.eyebrow, project.category, project.shortDescription, project.description, ...project.stack, ...project.capabilities].join(" ").toLowerCase();
+    const text = [project.title, project["eyebrow"], project.category, project.shortDescription, project.description, ...project.stack, ...project.capabilities].join(" ").toLowerCase();
     return text.includes(search.trim().toLowerCase());
   }), [projects, selectedFilter, search]);
   const selectedProject = visibleProjects.find((project) => project.key === selectedKey) ?? visibleProjects[0] ?? null;
   
-const featured =
-  projects.find((project) => project.key === "voya-vendor-platform") ??
-  projects.find((project) => project.featured) ??
-  projects[0];
-
-
   useEffect(() => {
     const slug = decodeURIComponent(window.location.hash.replace(/^#project=/, ""));
     if (!window.location.hash.startsWith("#project=")) return;
@@ -204,7 +199,10 @@ const featured =
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !playing) setDetailProject(null);
+      if (event.key === "Escape") {
+        setMobileNavOpen(false);
+        if (!playing) setDetailProject(null);
+      }
     };
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
@@ -221,7 +219,6 @@ const featured =
     }
   };
 
-  const projectIndex = (project: CmsProject) => projects.findIndex((item) => item.key === project.key);
   // CMS-managed navigation remains authoritative; editorial-only anchors are additions.
   const navLinks = [
     ...content.navigation.links,
@@ -231,35 +228,44 @@ const featured =
     ].filter((candidate) => !content.navigation.links.some((link) => link.href === candidate.href)),
   ];
 
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const root = document.querySelector<HTMLElement>(".ed");
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(
+      ".ed-section-heading > div, .ed-section-heading > p, .ed-index-item, .ed-stage, .ed-info-card, .ed-domain-card, .ed-process-steps > li, .ed-pricing-card, .ed-contact-form, .ed-footer-grid > div"
+    ));
+    if (!root || !elements.length || !("IntersectionObserver" in window)) return;
+
+    elements.forEach((element) => element.classList.add("ed-reveal"));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+
+    elements.forEach((element) => observer.observe(element));
+    root.classList.add("ed-motion-ready");
+    return () => {
+      observer.disconnect();
+      root.classList.remove("ed-motion-ready");
+    };
+  }, []);
+
   return (
     <main className="ed" id="top">
       <div className="ed-topline" aria-hidden="true" />
       <header className="ed-header">
         <div className="ed-container ed-nav">
-
-
-<a
-  className="ed-brand ed-brand-logo"
-  href="#top"
-  aria-label="DHISOFT homepage"
->
-  <span className="ed-header-logo-crop">
-    <Image
-      src="/images/dhisoft-logo.png"
-      alt="DHISOFT"
-      width={625}
-      height={451}
-      priority
-      className="ed-header-logo-image"
-    />
-  </span>
-</a>
-
-          <nav className={`ed-nav-links ${mobileNavOpen ? "is-open" : ""}`} aria-label="Primary navigation">
+          <a className="ed-brand ed-brand-logo" href="#top" aria-label="DHISOFT homepage">
+            <Image src="/images/dhisoft-logo.png" alt="DHISOFT" width={625} height={451} priority className="ed-header-logo-image" />
+          </a>
+          <nav id="primary-navigation" className={`ed-nav-links ${mobileNavOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             {navLinks.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileNavOpen(false)}>{link.label}</a>)}
           </nav>
           <a className="ed-btn ed-btn-dark ed-nav-cta" href={content.navigation.cta.href}>{content.navigation.cta.label} <ArrowUpRight size={14} /></a>
-          <button type="button" className="ed-icon-btn ed-nav-toggle" onClick={() => setMobileNavOpen((value) => !value)} aria-expanded={mobileNavOpen} aria-label={mobileNavOpen ? "Close menu" : "Open menu"}>
+          <button type="button" className="ed-icon-btn ed-nav-toggle" onClick={() => setMobileNavOpen((value) => !value)} aria-controls="primary-navigation" aria-expanded={mobileNavOpen} aria-label={mobileNavOpen ? "Close menu" : "Open menu"}>
             {mobileNavOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -269,8 +275,7 @@ const featured =
         <div className="ed-container">
           <div className="ed-hero-grid">
             <div>
-              <span className="ed-kicker">{content.hero.badge}</span>
-              <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+              <motion.h1 initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 {content.hero.titlePrefix} <em>{content.hero.titleHighlight}</em>
               </motion.h1>
               <p className="ed-hero-description">{content.hero.description}</p>
@@ -279,12 +284,8 @@ const featured =
                 <a className="ed-btn ed-btn-ghost" href={content.hero.secondaryCta.href}>{content.hero.secondaryCta.label} <ArrowUpRight size={15} /></a>
               </div>
             </div>
-            <div className="ed-hero-feature">
-              <div className="ed-hero-feature-top"><span>DHISOFT / FIELD NOTES / FEATURED BUILD</span><span>↗</span></div>
-              {featured && <><div className="ed-hero-preview"><ProductPreview project={featured} /></div><div className="ed-hero-feature-bottom"><div><span>FEATURED PRODUCT</span><strong>{featured.title}</strong></div><button type="button" onClick={() => openDetails(featured)} aria-label={`Explore ${featured.title}`}><ArrowUpRight size={18} /></button></div></>}
-            </div>
           </div>
-          <div className="ed-hero-footnote"><span>Multi-domain thinking</span><span>{String(projects.length).padStart(2, "0")} / SELECTED PRODUCTS</span><span>Scroll to explore ↓</span></div>
+          <div className="ed-hero-footnote"><span>Software for real operations</span><span>{projects.length} selected projects</span><a href="#work">Explore the work <ArrowRight size={14} aria-hidden="true" /></a></div>
         </div>
       </section>
 
@@ -294,23 +295,23 @@ const featured =
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 01 / ${portfolio.eyebrow}`} title={portfolio.heading} text={portfolio.description} />
           <div className="ed-work-tools">
-            <div className="ed-filters" aria-label="Filter projects">
+            <div className="ed-filters" role="group" aria-label="Filter projects">
               {filters.map((filter) => <button key={filter} type="button" aria-pressed={selectedFilter === filter} onClick={() => setSelectedFilter(filter)}>{filter}</button>)}
             </div>
             <label className="ed-search"><Search size={16} /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the work" aria-label="Search projects" /></label>
           </div>
-          <div className="ed-work-meta"><span>CHOOSE A PROJECT TO EXPLORE ITS STORY</span><span>{String(visibleProjects.length).padStart(2, "0")} / {String(projects.length).padStart(2, "0")} PROJECTS</span></div>
+          <div className="ed-work-meta"><span>Choose a project to see its story</span><span role="status" aria-live="polite">{visibleProjects.length} of {projects.length} projects</span></div>
           <div className="ed-explorer">
             <div className="ed-project-index" aria-label="Project index">
-              {visibleProjects.length ? visibleProjects.map((project) => <button key={project.key} className={`ed-index-item ${selectedProject?.key === project.key ? "is-selected" : ""}`} type="button" onClick={() => setSelectedKey(project.key)} aria-pressed={selectedProject?.key === project.key}>
-                <span className="ed-index-number">{String(projectIndex(project) + 1).padStart(2, "0")}</span>
+              {visibleProjects.length ? visibleProjects.map((project) => { const poster = projectPoster(project); return <button key={project.key} className={`ed-index-item ${poster ? "has-poster" : ""} ${selectedProject?.key === project.key ? "is-selected" : ""}`} type="button" onClick={() => setSelectedKey(project.key)} aria-pressed={selectedProject?.key === project.key}>
+                {poster && <span className="ed-index-thumb" aria-hidden="true"><Image src={poster} alt="" width={104} height={78} /></span>}
                 <span><strong>{project.title}</strong><small>{projectGroup(project)} / {project.category}</small></span>
                 <ArrowUpRight size={15} aria-hidden="true" />
-              </button>) : <p className="ed-empty">No matching projects. Clear your search or choose another category.</p>}
+              </button>; }) : <p className="ed-empty">No matching projects. Clear your search or choose another category.</p>}
             </div>
             <div className="ed-stage">
               {selectedProject ? <>
-                <div className="ed-stage-top"><span>PROJECT {String(projectIndex(selectedProject) + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")} · {selectedProject.eyebrow}</span><span>{selectedProject.status}</span></div>
+                <div className="ed-stage-top"><span>{selectedProject.eyebrow}</span><span>{selectedProject.status}</span></div>
                 <ProjectArtwork project={selectedProject} onPlay={setPlaying} />
                 <div className="ed-stage-bottom"><div><h3>{selectedProject.title}</h3><p>{selectedProject.shortDescription}</p></div><ProjectLinks project={selectedProject} onPlay={setPlaying} onDetail={openDetails} compact /></div>
 
@@ -350,18 +351,6 @@ const featured =
               </> : <p className="ed-empty">Choose another category to view projects.</p>}
             </div>
           </div>
-          <div className="ed-gallery-head"><div><span className="ed-kicker">EXPLORE ALL CASES</span><h3>Every project, every angle.</h3></div><span>{String(visibleProjects.length).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span></div>
-          <div className="ed-gallery">
-            {visibleProjects.map((project) => <article key={project.key} className="ed-gallery-card">
-              <div className="ed-gallery-meta"><span>{String(projectIndex(project) + 1).padStart(2, "0")} / {project.eyebrow}</span><span>{project.status}</span></div>
-              <ProjectArtwork project={project} onPlay={setPlaying} />
-              <h3>{project.title}</h3>
-              <p className="ed-gallery-lead">{project.shortDescription}</p>
-              <p>{project.description}</p>
-              <div className="ed-pills">{project.capabilities.map((item) => <span key={item} className="ed-pill">{item}</span>)}{project.stack.map((item) => <span key={`tech-${item}`} className="ed-pill">{item}</span>)}</div>
-              <ProjectLinks project={project} onPlay={setPlaying} onDetail={openDetails} compact />
-            </article>)}
-          </div>
         </div>
       </section>
 
@@ -369,11 +358,11 @@ const featured =
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 02 / ${content.products.eyebrow}`} title={content.products.heading} text="Product engineering that respects the operational logic beneath every screen." />
           <div className="ed-cards ed-cards-four">
-            {activeSorted(content.products.items).map((item, index) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><div className="ed-card-count">{String(index + 1).padStart(2, "0")} / WHAT WE BUILD</div><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
+            {activeSorted(content.products.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
           </div>
           <div className="ed-subsection-heading"><h3>From idea to operation</h3><span>THREE CORE CAPABILITIES</span></div>
           <div className="ed-cards ed-cards-three">
-            {activeSorted(content.capabilities.items).map((item, index) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><div className="ed-card-count">{String(index + 1).padStart(2, "0")} / WORKSTREAM</div><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
+            {activeSorted(content.capabilities.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
           </div>
         </div>
       </section>
@@ -382,47 +371,38 @@ const featured =
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 03 / ${domains.eyebrow}`} title={domains.heading} text="Domain-specific workflows demand thoughtful technical choices." />
           <div className="ed-cards ed-domains-grid">
-            {activeSorted(domains.items).map((item, index) => <article key={item.key} className="ed-domain-card"><span className="ed-card-count">{String(index + 1).padStart(2, "0")} / OPERATING ENVIRONMENT</span><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div></article>)}
+            {activeSorted(domains.items).map((item) => <article key={item.key} className="ed-domain-card"><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div></article>)}
           </div>
         </div>
       </section>
 
       <section id="engineering" className="ed-section ed-engineering">
-        <div className="ed-container ed-engineering-grid"><div><span className="ed-kicker">INDEX 04 / {content.platform.eyebrow}</span><h2>{content.platform.heading}</h2><p>{content.platform.description}</p><div className="ed-engineering-features">{content.platform.features.map((item) => <div key={item}><ArrowUpRight size={15} />{item}</div>)}</div></div><div className="ed-engineering-orbit"><div className="ed-engineering-center">Design<br />↓<br />Delivery</div><span className="ed-orbit-label ed-orbit-label-one">INTEGRATED SYSTEMS</span><span className="ed-orbit-label ed-orbit-label-two">BUILT TO LAST ↗</span></div></div>
+        <div className="ed-container ed-engineering-grid"><div><h2>{content.platform.heading}</h2><p>{content.platform.description}</p><div className="ed-engineering-features">{content.platform.features.map((item) => <div key={item}><ArrowUpRight size={15} />{item}</div>)}</div></div></div>
       </section>
 
       <section id="principles" className="ed-section">
-        <div className="ed-container"><EditorialSectionIntro kicker={`INDEX 05 / ${principles.eyebrow}`} title={principles.heading} text={principles.description} /><div className="ed-cards ed-cards-three">{activeSorted(principles.items).map((item, index) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><span className="ed-card-count">{String(index + 1).padStart(2, "0")} / PRINCIPLE</span><Icon size={23} /><h3>{item.title}</h3><p>{item.description}</p></article>; })}</div></div>
+        <div className="ed-container"><EditorialSectionIntro kicker={principles.eyebrow} title={principles.heading} text={principles.description} /><div className="ed-cards ed-cards-three">{activeSorted(principles.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.description}</p></article>; })}</div></div>
       </section>
 
       <section id="process" className="ed-section ed-process">
-        <div className="ed-container"><EditorialSectionIntro kicker={`INDEX 06 / ${engagement.eyebrow}`} title={engagement.heading} text={engagement.description} /><div className="ed-process-steps">{activeSorted(engagement.steps).map((item, index) => <article key={item.key}><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></div>
+        <div className="ed-container"><EditorialSectionIntro kicker={engagement.eyebrow} title={engagement.heading} text={engagement.description} /><ol className="ed-process-steps">{activeSorted(engagement.steps).map((item) => <li key={item.key}><h3>{item.title}</h3><p>{item.description}</p></li>)}</ol></div>
       </section>
 
       <section id="pricing" className="ed-section">
-        <div className="ed-container ed-pricing-grid"><div><span className="ed-kicker">INDEX 07 / COLLABORATE</span><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p><a className="ed-btn ed-btn-primary" href={content.pricing.cta.href}>{content.pricing.cta.label}<ArrowRight size={15} /></a></div><div className="ed-pricing-card"><span className="ed-kicker">{content.pricing.cardLabel}</span><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
+        <div className="ed-container ed-pricing-grid"><div><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p><a className="ed-btn ed-btn-primary" href={content.pricing.cta.href}>{content.pricing.cta.label}<ArrowRight size={15} /></a></div><div className="ed-pricing-card"><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
       </section>
 
-      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><span className="ed-kicker">INDEX 08 / OPEN A CONVERSATION</span><h2>Make something <em>matter.</em></h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
+      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Make something <em>matter.</em></h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
 
       <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div>
       
-<a
-  className="ed-brand ed-brand-logo ed-footer-brand-logo"
-  href="#top"
-  aria-label="DHISOFT homepage"
->
-  <Image
-    src="/images/dhisoft-full-logo.png"
-    alt="DHISOFT - Engineering the Future, A Doview Holidays Pvt Ltd Company"
-    width={625}
-    height={451}
-  />
+<a className="ed-brand ed-brand-logo ed-footer-brand-logo" href="#top" aria-label="DHISOFT homepage">
+  <Image src="/images/dhisoft-logo.png" alt="DHISOFT" width={625} height={451} />
 </a>
 
-<p>{content.footer.description}</p></div><div><span className="ed-kicker">EXPLORE</span>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><span className="ed-kicker">ELSEWHERE</span><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${content.footer.email}`}>Email DHISOFT ↗</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
+<p>{content.footer.description}</p></div><div><h2>Explore</h2>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><h2>Contact</h2><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${content.footer.email}`}>Email DHISOFT ↗</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
 
-      {detailProject && <ProjectDetail key={detailProject.key} project={detailProject} index={projectIndex(detailProject)} total={projects.length} onClose={closeDetails} onPlay={setPlaying} />}
+      {detailProject && <ProjectDetail key={detailProject.key} project={detailProject} onClose={closeDetails} onPlay={setPlaying} />}
       {playing && <VideoModal project={playing} onClose={() => setPlaying(null)} />}
     </main>
   );

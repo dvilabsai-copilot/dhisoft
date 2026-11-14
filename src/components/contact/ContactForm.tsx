@@ -19,7 +19,7 @@ export default function ContactForm({ endpoint }: { endpoint: string }) {
     finally { window.clearTimeout(timeout); }
   }
   const disabled = state === 'pending';
-  return <form onSubmit={submit} className="mt-8 rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm" aria-describedby="contact-form-status">
+  return <form onSubmit={submit} className="mt-8 rounded-[2rem] border border-slate-200 bg-slate-50 p-6" aria-describedby="contact-form-status">
     <div className="grid gap-4 sm:grid-cols-2">
       <label className="text-sm font-medium text-slate-700">Name<input required value={values.name} onChange={(event) => update('name', event.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5" /></label>
       <label className="text-sm font-medium text-slate-700">Email<input required type="email" value={values.email} onChange={(event) => update('email', event.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5" /></label>
