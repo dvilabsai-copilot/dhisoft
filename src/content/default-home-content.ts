@@ -296,7 +296,7 @@ export const defaultHomeContent: HomeContent = {
   isActive: true,
  
   videoSource: "mp4",
-  videoUrl: "/media/projects/voya-vendor-platform.mp4",
+  videoUrl: "/media/projects/voya-vendor-platform(1)(1).mp4",
   liveDemoUrl: "https://demo.dhisoft.in/voya",
 
 },
@@ -323,7 +323,7 @@ export const defaultHomeContent: HomeContent = {
         isActive: true,
 
         videoSource: "mp4",
-        videoUrl: "/media/projects/yes-we-care.mp4",
+        videoUrl: "/media/projects/yes-we-care(1).mp4",
         liveDemoUrl: "https://demo.dhisoft.in/ywc/index.html",
       },
       {
@@ -348,7 +348,7 @@ export const defaultHomeContent: HomeContent = {
         sortOrder: 80,
         isActive: true,
         videoSource: "mp4",
-        videoUrl: "/media/projects/yes-we-care-admin.mp4",
+        videoUrl: "/media/projects/yes-we-care-admin(1).mp4",
         liveDemoUrl: "https://demo.dhisoft.in/ywc/admin.html",
       },
     ],
