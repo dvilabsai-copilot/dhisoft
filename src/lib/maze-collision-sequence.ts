@@ -13,7 +13,7 @@ export const MAZE_ENTRY_START=8.3,MAZE_ENTRY_DURATION=.95,MAZE_ENTRY_INTERVAL=1.
 export const MAZE_LAST_ENTRY=MAZE_ENTRY_START+3*MAZE_ENTRY_INTERVAL+MAZE_ENTRY_DURATION;
 export const MAZE_D_MOVE_START=17.4,MAZE_D_MOVE_END=19.55;
 export const MAZE_DOT_ROLL_START=19.9;
-export const MAZE_LOGO_START=21.35,MAZE_LOGO_END=22.65,MAZE_CYCLE=27;
+export const MAZE_LOGO_START=21.35,MAZE_LOGO_END=23.2,MAZE_CYCLE=27;
 export const MAZE_STAGES=[
   {name:"gather-outer",start:.55,end:1.55},
   {name:"enter-outer",start:1.8,end:2.3},
@@ -34,9 +34,9 @@ const rawDot=(index:number)=>{
 };
 
 export function mazeCollector(seconds:number,still=false) {
-  const time=still ? MAZE_LOGO_END+1 : seconds%MAZE_CYCLE;
-  const progress=ease((time-MAZE_D_MOVE_START)/(MAZE_D_MOVE_END-MAZE_D_MOVE_START));
-  return {x:MAZE_D_FINAL.x*progress,y:mix(.17,MAZE_D_FINAL.y,progress),angle:Math.PI/2*(1-progress),scale:mix(1.6,1,progress),lift:Math.sin(progress*Math.PI)*.10,progress};
+  // The brand stays at its final position throughout; only marbles travel.
+  void seconds;void still;
+  return {x:MAZE_D_FINAL.x,y:MAZE_D_FINAL.y,angle:0,scale:1,lift:0,progress:1};
 }
 function inCollector(p:Point,time:number) {
   const c=mazeCollector(time),cos=Math.cos(c.angle),sin=Math.sin(c.angle);
@@ -85,7 +85,10 @@ function entryAt(time:number,index:number):Point {
   const u=Math.max(0,Math.min(1,(time-MAZE_ENTRY_START-index*MAZE_ENTRY_INTERVAL)/MAZE_ENTRY_DURATION));
   if(u<.25) return polar(1.45,3*Math.PI/2+spreadAngles[index]*(1-ease(u/.25)));
   if(u<.65) return polar(mix(1.45,.78,ease((u-.25)/.4)),3*Math.PI/2);
-  return lerp(polar(.78,3*Math.PI/2),inCollector(entryLocal(index),MAZE_ENTRY_START),ease((u-.65)/.35));
+  // Approach the open left side of the fixed D, avoiding its bottom stroke.
+  const entrance={x:MAZE_D_FINAL.x-.60,y:MAZE_D_FINAL.y+entryLocal(index).y};
+  if(u<.84) return lerp(polar(.78,3*Math.PI/2),entrance,ease((u-.65)/.19));
+  return lerp(entrance,inCollector(entryLocal(index),MAZE_ENTRY_START),ease((u-.84)/.16));
 }
 
 function downhill(time:number) {
@@ -121,7 +124,7 @@ function downhill(time:number) {
     const angle=(time-MAZE_LAST_ENTRY)*shakeRate+shakePhase,strength=Math.sin(.16)*ramp;
     return {x:Math.cos(angle)*strength,y:Math.sin(angle)*strength,stage:"loose-collisions"};
   }
-  return {x:0,y:0,stage:time<MAZE_D_MOVE_END ? "move-D" : "settled"};
+  return {x:0,y:0,stage:"settled"};
 }
 
 type Body=Point&{vx:number;vy:number;entered:boolean};
@@ -196,7 +199,7 @@ function sampleMazeMarble(seconds:number,index:number,still=false) {
   else if(time<MAZE_ENTRY_START) {p=outsidePose(time,index);radius=mix(initialRadius,rollingRadius,ease((time-MAZE_FIRST_IMPACT)/.18));}
   else if(index<4&&time<arrival(index)) p=entryAt(time,index);
   else if(time<MAZE_D_MOVE_END) {p=inCollector(looseLocal(index,time),time);z=mazeCollector(time).lift;}
-  else {const q=ease((time-MAZE_DOT_ROLL_START-index*.07)/1.3);p=q===1 ? target : lerp(inCollector(looseLocal(index,MAZE_D_MOVE_END),MAZE_D_MOVE_END),target,q);radius=mix(rollingRadius,target.radius,q);docked=q===1;}
+  else {const q=ease((time-MAZE_DOT_ROLL_START-index*.24)/1.1);p=q===1 ? target : lerp(inCollector(looseLocal(index,MAZE_D_MOVE_END),MAZE_D_MOVE_END),target,q);radius=mix(rollingRadius,target.radius,q);docked=q===1;}
   const age=(time-births[index])/.18,scale=index<2||index===8 ? 1 : ease(age);
   const impacts=[...outsideCollisions,...bowlCollisions].filter(e=>e.pair.includes(index)||e.child===index).map(e=>e.time);
   const impact=impacts.reduce((value,event)=>{const q=(time-event)/.22;return Math.max(value,q>=0&&q<=1 ? Math.sin(q*Math.PI) : 0);},0);
@@ -207,10 +210,10 @@ function mazeHandTilt(seconds:number,still=false) {
   if(still) return {pitch:0,yaw:0,downhillX:0,downhillY:0,stage:"still"};
   const time=seconds%MAZE_CYCLE;
   let g=downhill(time);
-  if(time>=MAZE_DOT_ROLL_START&&time<MAZE_LOGO_START+.4) {
+  if(time>=MAZE_DOT_ROLL_START&&time<MAZE_LOGO_END) {
     let x=0,y=0;
     for(let i=0;i<9;i++){const a=sampleMazeMarble(time-.002,i),b=sampleMazeMarble(time+.002,i);x+=b.x-a.x;y+=b.y-a.y;}
-    const length=Math.hypot(x,y)||1,strength=Math.sin(.12)*ease((time-MAZE_DOT_ROLL_START)/.15)*(1-ease((time-MAZE_LOGO_START+.1)/.5));
+    const length=Math.hypot(x,y)||1,strength=Math.sin(.12)*ease((time-MAZE_DOT_ROLL_START)/.15)*(1-ease((time-MAZE_LOGO_END+.3)/.3));
     g={x:x/length*strength,y:y/length*strength,stage:"seat-dots"};
   }
   const pitch=-Math.asin(g.y),yaw=Math.asin(Math.max(-1,Math.min(1,g.x/Math.cos(pitch))));
@@ -223,9 +226,9 @@ function sampleMazeSequence(seconds:number,still=false) {
   const events=[...outsideCollisions,...bowlCollisions];
   const impacts=events.flatMap(e=>{const age=(time-e.time)/.3;return age>=0&&age<1 ? [{...e.point,age}] : [];});
   return {marbles,impacts,collector:mazeCollector(time,still),collision:events.filter(e=>time>=e.time).length,
-    logo:ease((time-MAZE_LOGO_START)/(MAZE_LOGO_END-MAZE_LOGO_START)),...mazeHandTilt(time,still),
+    logo:1,...mazeHandTilt(time,still),
     fade:still ? 1 : ease(time/.3)*(1-ease((time-MAZE_CYCLE+.55)/.55)),
-    phase:still ? "still" : time>=MAZE_LOGO_END ? "logo" : impacts.length ? "impact" : time>=MAZE_D_MOVE_START&&time<MAZE_D_MOVE_END ? "assembling" : time>=MAZE_ENTRY_START ? "collecting" : "rolling"};
+    phase:still ? "still" : time>=MAZE_LOGO_END ? "logo" : impacts.length ? "impact" : time>=MAZE_DOT_ROLL_START ? "seating-dots" : time>=MAZE_ENTRY_START ? "collecting" : "rolling"};
 }
   return {sampleMazeSequence,sampleMazeMarble,mazeDestination,mazeHandTilt,bowlCollisions,outsideCollisions,complete:nextChild===8};
 }

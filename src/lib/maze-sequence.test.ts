@@ -82,12 +82,17 @@ describe("pair collision maze",()=> {
     });
     expect(new Set(events.map(e=>`${e.point.x.toFixed(2)},${e.point.y.toFixed(2)}`)).size).toBeGreaterThan(3);
   });
-  it("lets the spheres move independently in the bowl while the D turns",()=> {
+  it("keeps the complete wordmark fixed while the marbles roll independently",()=> {
     const local=(time:number,index:number)=> {
       const m=sampleMazeMarble(time,index),c=mazeCollector(time),x=(m.x-c.x)/c.scale,y=(m.y-c.y)/c.scale;
       return {x:x*Math.cos(c.angle)+y*Math.sin(c.angle),y:-x*Math.sin(c.angle)+y*Math.cos(c.angle)};
     };
     const a=MAZE_D_MOVE_START+.3,b=MAZE_D_MOVE_START+1.2;
+    for(const time of [0,MAZE_FIRST_IMPACT,MAZE_LAST_ENTRY,a,b,MAZE_LOGO_END]) {
+      expect(sampleMazeSequence(time).logo).toBe(1);
+      expect(mazeCollector(time)).toEqual(mazeCollector(0));
+      expect(mazeCollector(time)).toMatchObject({angle:0,scale:1,lift:0,progress:1});
+    }
     for(let i=0;i<9;i++) {
       const p=local(a,i),q=local(b,i);
       expect(Math.hypot(p.x-q.x,p.y-q.y)).toBeGreaterThan(.001);

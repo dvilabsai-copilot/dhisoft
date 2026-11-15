@@ -64,8 +64,8 @@ export default function CinematicMaze({progress,still,paused,replayKey}: {progre
         geometry.translate(0,0,.115);geometries.push(geometry);board.add(new THREE.Mesh(geometry,blue));
       });
 
-      // The actual brand D is a raised, open semicircular bowl, rather than a
-      // printed letter. The spheres remain loose inside it during its movement.
+      // The complete brand remains fixed. Marbles roll into the original nine
+      // dot positions to the left of the raised D.
       const collector=new THREE.Group();board.add(collector);
       const dShape=new THREE.Shape();
       DHI_D_OUTLINE.forEach(([x,y],index)=> {
