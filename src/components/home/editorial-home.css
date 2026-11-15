@@ -143,7 +143,8 @@
 .ed .ed-contact-grid { width: min(1080px, 100%); display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 32px; margin-inline: auto; }
 .ed .ed-contact h2 { margin: 16px 0 22px; font-size: clamp(40px, 5vw, 64px); }
 .ed .ed-contact p { max-width: 52ch; color: #304a69; font-size: 17px; }
-.ed .ed-contact-grid > div:first-child .ed-btn { margin-top: 20px; }
+.ed .ed-contact-links { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 24px; }
+.ed .ed-contact-links .ed-btn { margin: 0; }
 .ed .ed-contact-form > form { margin: 0; padding: 28px; border: 0; border-radius: 0; background: #f1f5f9; }
 .ed .ed-contact-form label { color: #203c5d; font-size: 15px; }
 .ed .ed-contact-form input, .ed .ed-contact-form textarea { min-height: 48px; border-radius: 2px; color: #102b52; }

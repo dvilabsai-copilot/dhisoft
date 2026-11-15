@@ -138,7 +138,7 @@ export const defaultHomeContent: HomeContent = {
   footer: {
     brandName: "DHISOFT",
     description: "SaaS & product engineering for complex businesses.",
-    email: "hello@dhisoft.com",
+    email: "info@dhisoft.in",
   },
   dashboard: {
     enabled: false,

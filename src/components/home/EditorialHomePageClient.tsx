@@ -9,6 +9,7 @@ import {
   Copy,
   Menu,
   Play,
+  Phone,
   Search,
   X,
 } from "lucide-react";
@@ -164,6 +165,7 @@ function EditorialSectionIntro({ kicker: _kicker, title, text }: { kicker: strin
 }
 
 export default function EditorialHomePageClient({ content }: { content: HomeContent }) {
+  const contactEmail = content.footer.email === "hello@dhisoft.com" ? defaultHomeContent.footer.email : content.footer.email;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<ProjectFilter>("All");
   const [search, setSearch] = useState("");
@@ -370,7 +372,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
         <div className="ed-container ed-pricing-grid"><div><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p></div><div className="ed-pricing-card"><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
       </section>
 
-      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Let’s build what’s next.</h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><a className="ed-btn ed-btn-ghost" href={`mailto:${content.footer.email}`}>{content.footer.email}<ArrowUpRight size={14} /></a></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
+      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Let’s build what’s next.</h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><div className="ed-contact-links"><a className="ed-btn ed-btn-ghost" href={`mailto:${contactEmail}`}>{contactEmail}<ArrowUpRight size={14} /></a><a className="ed-btn ed-btn-ghost" href="tel:+917207260372"><Phone size={16} aria-hidden="true" />+91 7207260372</a></div></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
 
       <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div>
       
@@ -378,7 +380,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
   <Image src="/images/dhisoft-logo.png" alt="DHISOFT" width={625} height={451} />
 </a>
 
-<p>{content.footer.description}</p></div><div><h2>Explore</h2>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><h2>Contact</h2><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${content.footer.email}`}>Email DHISOFT ↗</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
+<p>{content.footer.description}</p></div><div><h2>Explore</h2>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><h2>Contact</h2><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${contactEmail}`}>Email DHISOFT ↗</a><a href="tel:+917207260372">+91 7207260372</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
 
       {detailProject && <ProjectDetail key={detailProject.key} project={detailProject} onClose={closeDetails} onPlay={setPlaying} />}
       {playing && <VideoModal project={playing} onClose={() => setPlaying(null)} />}
