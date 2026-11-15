@@ -4,7 +4,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
-  ArrowRight,
   ArrowUpRight,
   ChevronRight,
   Copy,
@@ -13,7 +12,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import CinematicHero from "@/components/home/CinematicHero";
 import ContactForm from "@/components/contact/ContactForm";
 import ProjectMedia from "@/components/home/ProjectMedia";
 import VideoModal from "@/components/home/VideoModal";
@@ -165,7 +164,6 @@ function EditorialSectionIntro({ kicker: _kicker, title, text }: { kicker: strin
 }
 
 export default function EditorialHomePageClient({ content }: { content: HomeContent }) {
-  const reduceMotion = useReducedMotion();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<ProjectFilter>("All");
   const [search, setSearch] = useState("");
@@ -220,11 +218,6 @@ const [selectedKey, setSelectedKey] = useState<string>(
   };
 
   const navLinks = content.navigation.links;
-  const heroServices = [
-    { title: "Product design", text: "Make the complex feel clear. Research, workflows and interfaces built around people." },
-    { title: "Software engineering", text: "Bring the whole system together. Frontend, backend, integrations and automation." },
-    { title: "Cloud & delivery", text: "Move from build to business. Deployment, monitoring and a reliable path forward." },
-  ];
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -262,6 +255,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
           </a>
           <nav id="primary-navigation" className={`ed-nav-links ${mobileNavOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             {navLinks.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileNavOpen(false)}>{link.label}</a>)}
+            <a className="ed-mobile-nav-contact" href={content.navigation.cta.href} onClick={() => setMobileNavOpen(false)}>{content.navigation.cta.label} <ArrowUpRight size={14} aria-hidden="true" /></a>
           </nav>
           <a className="ed-btn ed-btn-dark ed-nav-cta" href={content.navigation.cta.href}>{content.navigation.cta.label} <ArrowUpRight size={14} /></a>
           <button type="button" className="ed-icon-btn ed-nav-toggle" onClick={() => setMobileNavOpen((value) => !value)} aria-controls="primary-navigation" aria-expanded={mobileNavOpen} aria-label={mobileNavOpen ? "Close menu" : "Open menu"}>
@@ -270,26 +264,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
         </div>
       </header>
 
-      <section className="ed-hero ed-hero-blue" aria-label="Product engineering studio">
-        <div className="ed-container">
-          <div className="ed-hero-grid">
-            <div>
-              <motion.h1 initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                <span>{content.hero.titlePrefix}</span><span>{content.hero.titleHighlight}</span>
-              </motion.h1>
-              <p className="ed-hero-description">{content.hero.description}</p>
-              <div className="ed-actions ed-hero-actions">
-                <a className="ed-btn ed-btn-primary" href={content.hero.primaryCta.href}>{content.hero.primaryCta.label} <ArrowUpRight size={15} /></a>
-                <a className="ed-btn ed-btn-ghost" href={content.hero.secondaryCta.href}>{content.hero.secondaryCta.label} <ArrowUpRight size={15} /></a>
-              </div>
-            </div>
-          </div>
-          <div className="ed-hero-expertise">
-            {heroServices.map((service) => <div key={service.title}><h2>{service.title}</h2><p>{service.text}</p></div>)}
-          </div>
-        </div>
-        <div className="ed-hero-close"><div className="ed-container ed-hero-footnote"><span>Design. Build. Launch. Evolve.</span><a href="#work">See all work <ArrowRight size={16} aria-hidden="true" /></a></div></div>
-      </section>
+      <CinematicHero />
 
       <div className="ed-audience"><div className="ed-container ed-audience-inner">{content.audiences.map((item) => <span key={item}>{item}</span>)}</div></div>
 

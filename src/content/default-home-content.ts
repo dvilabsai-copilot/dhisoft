@@ -10,7 +10,7 @@ export const defaultHomeContent: HomeContent = {
       { label: "Engineering", href: "#engineering" },
       { label: "Process", href: "#process" },
     ],
-    cta: { label: "Discuss a product", href: "#contact" },
+    cta: { label: "Discuss your project", href: "#contact" },
   },
   seo: {
     title: "DHISOFT | SaaS & Product Engineering Studio",
@@ -225,7 +225,7 @@ export const defaultHomeContent: HomeContent = {
       {
         key: "travel-os",
         slug: "travel-os",
-        title: "DHISOFT Travel OS",
+        title: "Travel OS",
         eyebrow: "Travel operations",
         category: "Workflow platform",
         shortDescription:
