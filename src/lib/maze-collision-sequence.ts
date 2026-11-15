@@ -1,4 +1,4 @@
-import {DHI_D_CENTRE} from "./dhi-d-outline";
+import {DHI_D_OUTLINE,DHI_D_CENTRE} from "./dhi-d-outline";
 
 export const MAZE_DOT_BOUNDS=[
   [21,77,39,96],[73,87,91,106],[47,107,65,126],
@@ -41,6 +41,22 @@ export function mazeCollector(seconds:number,still=false) {
 function inCollector(p:Point,time:number) {
   const c=mazeCollector(time),cos=Math.cos(c.angle),sin=Math.sin(c.angle);
   return {x:c.x+(p.x*cos-p.y*sin)*c.scale,y:c.y+(p.x*sin+p.y*cos)*c.scale};
+}
+const dWall=DHI_D_OUTLINE.map(([x,y])=>({x:(x-DHI_D_CENTRE[0])*2/569,y:(DHI_D_CENTRE[1]-y)*2/569}));
+function dWallContact(p:Point) {
+  let inside=false,distance2=Infinity,closest={x:0,y:0};
+  for(let i=0,j=dWall.length-1;i<dWall.length;j=i++) {
+    const a=dWall[j],b=dWall[i],dx=b.x-a.x,dy=b.y-a.y;
+    if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) inside=!inside;
+    const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));
+    const q={x:a.x+dx*t,y:a.y+dy*t},d=(p.x-q.x)**2+(p.y-q.y)**2;
+    if(d<distance2) {distance2=d;closest=q;}
+  }
+  const distance=Math.sqrt(distance2),direction=inside ? -1 : 1;
+  return {distance:distance*direction,nx:(p.x-closest.x)/(distance||1)*direction,ny:(p.y-closest.y)/(distance||1)*direction};
+}
+export function mazeDWallClearance(p:Point) {
+  return dWallContact({x:p.x-MAZE_D_FINAL.x,y:p.y-MAZE_D_FINAL.y}).distance;
 }
 export const MAZE_FIRST_CONTACTS=[{x:-.06,y:1.85},{x:.06,y:1.85}] as const;
 function parentOnStage(index:number,stage:number,q:number):Point {
@@ -87,8 +103,10 @@ function entryAt(time:number,index:number):Point {
   if(u<.65) return polar(mix(1.45,.78,ease((u-.25)/.4)),3*Math.PI/2);
   // Approach the open left side of the fixed D, avoiding its bottom stroke.
   const entrance={x:MAZE_D_FINAL.x-.60,y:MAZE_D_FINAL.y+entryLocal(index).y};
-  if(u<.84) return lerp(polar(.78,3*Math.PI/2),entrance,ease((u-.65)/.19));
-  return lerp(entrance,inCollector(entryLocal(index),MAZE_ENTRY_START),ease((u-.84)/.16));
+  const below={x:entrance.x,y:-.48};
+  if(u<.75) return lerp(polar(.78,3*Math.PI/2),below,ease((u-.65)/.10));
+  if(u<.89) return lerp(below,entrance,ease((u-.75)/.14));
+  return lerp(entrance,inCollector(entryLocal(index),MAZE_ENTRY_START),ease((u-.89)/.11));
 }
 
 function downhill(time:number) {
@@ -178,6 +196,12 @@ for(let step=1;step<=steps;step++) {
       const r=rollingRadius/c.scale*(i<4||i===8 ? 1 : ease((time-births[i])/.18));
       const dx=p.x+.08,dy=p.y,d=Math.hypot(dx,dy),limit=.265-r;
       if(d>limit) {const nx=dx/d,ny=dy/d;p.x=-.08+nx*limit;p.y=ny*limit;const speed=p.vx*nx+p.vy*ny;if(speed>0){p.vx-=speed*1.5*nx;p.vy-=speed*1.5*ny;}}
+      const wall=dWallContact(p),clearance=r+.011;
+      if(wall.distance<clearance) {
+        const push=clearance-wall.distance;p.x+=wall.nx*push;p.y+=wall.ny*push;
+        const speed=p.vx*wall.nx+p.vy*wall.ny;
+        if(speed<0) {p.vx-=speed*1.5*wall.nx;p.vy-=speed*1.5*wall.ny;}
+      }
     }
   }
   bowlFrames.push(bodies.map(({x,y})=>({x,y})));

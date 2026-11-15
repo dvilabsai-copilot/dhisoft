@@ -1,5 +1,5 @@
 import {describe,expect,it} from "vitest";
-import {MAZE_BOWL_COLLISIONS,MAZE_OUTSIDE_COLLISIONS,MAZE_CYCLE,MAZE_D_MOVE_END,MAZE_D_MOVE_START,MAZE_ENTRY_START,MAZE_ENTRY_INTERVAL,MAZE_ENTRY_DURATION,MAZE_FIRST_CONTACTS,MAZE_FIRST_IMPACT,MAZE_GATE_HALF,MAZE_LAST_ENTRY,MAZE_LOGO_END,MAZE_STAGES,MAZE_WALLS,createMazeSequence,mazeCollector,mazeDestination,mazeHandTilt,sampleMazeMarble,sampleMazeSequence} from "./maze-sequence";
+import {MAZE_BOWL_COLLISIONS,MAZE_OUTSIDE_COLLISIONS,MAZE_CYCLE,MAZE_D_MOVE_END,MAZE_D_MOVE_START,MAZE_ENTRY_START,MAZE_ENTRY_INTERVAL,MAZE_ENTRY_DURATION,MAZE_FIRST_CONTACTS,MAZE_FIRST_IMPACT,MAZE_GATE_HALF,MAZE_LAST_ENTRY,MAZE_LOGO_END,MAZE_STAGES,MAZE_WALLS,createMazeSequence,mazeDWallClearance,mazeCollector,mazeDestination,mazeHandTilt,sampleMazeMarble,sampleMazeSequence} from "./maze-sequence";
 
 describe("pair collision maze",()=> {
   const count=(time:number)=>sampleMazeSequence(time).marbles.filter(m=>m.active).length;
@@ -60,6 +60,11 @@ describe("pair collision maze",()=> {
       }
     }
   });
+  it("keeps rolling spheres clear of the actual raised D outline",()=> {
+    for(let t=0;t<MAZE_LOGO_END;t+=.025) for(const marble of sampleMazeSequence(t).marbles) {
+      if(marble.active&&marble.scale>.95) expect(mazeDWallClearance(marble),`D wall at ${t.toFixed(3)}: ${marble.x.toFixed(3)},${marble.y.toFixed(3)}`).toBeGreaterThanOrEqual(marble.radius+.008);
+    }
+  });
   it("takes the four into the D one after another",()=> {
     expect(MAZE_ENTRY_INTERVAL).toBeGreaterThan(MAZE_ENTRY_DURATION);
     for(let i=0;i<4;i++) {
@@ -74,6 +79,9 @@ describe("pair collision maze",()=> {
     const sequence=createMazeSequence(seed);
     expect(sequence.sampleMazeSequence(0).marbles.filter(m=>m.active)).toHaveLength(3);
     expect(sequence.sampleMazeSequence(MAZE_D_MOVE_START).marbles.filter(m=>m.active)).toHaveLength(9);
+    for(let t=0;t<MAZE_LOGO_END;t+=.08) for(const marble of sequence.sampleMazeSequence(t).marbles) {
+      if(marble.active&&marble.scale>.95) expect(mazeDWallClearance(marble)).toBeGreaterThanOrEqual(marble.radius+.007);
+    }
     const events=[...sequence.outsideCollisions,...sequence.bowlCollisions];
     expect(events).toHaveLength(6);
     events.forEach((event,index)=>{
