@@ -15,8 +15,8 @@ describe("pair collision maze",()=> {
     const impact=sampleMazeSequence(MAZE_FIRST_IMPACT);
     const a=impact.marbles[0],b=impact.marbles[1];
     expect(Math.hypot(a.x-b.x,a.y-b.y)).toBeCloseTo(a.radius+b.radius,10);
-    expect(Math.hypot(a.x,a.y)).toBeCloseTo(1.45,2);
-    expect(impact.marbles[2].x).toBe(0);expect(impact.marbles[2].y).toBe(-1.45);expect(impact.marbles[2].scale).toBe(0);
+    expect(Math.hypot(a.x,a.y)).toBeCloseTo(1.85,2);
+    expect(impact.marbles[2].x).toBe(0);expect(impact.marbles[2].y).toBe(1.85);expect(impact.marbles[2].scale).toBe(0);
     for(let i=0;i<2;i++) expect(impact.marbles[i]).toMatchObject(MAZE_FIRST_CONTACTS[i]);
   });
   it("adds one marble per individual contact inside the D, with time between collisions",()=> {
@@ -34,9 +34,26 @@ describe("pair collision maze",()=> {
       expect(Math.hypot(dx,dy)).toBeLessThan(.6);
     });
   });
+  it("collides in the second circle before crossing its inner wall",()=> {
+    expect(MAZE_FIRST_IMPACT).toBeLessThan(4);
+    for(const event of MAZE_OUTSIDE_COLLISIONS) {
+      expect(Math.hypot(event.point.x,event.point.y)).toBeGreaterThan(MAZE_WALLS[1].radius+.12);
+      expect(Math.hypot(event.point.x,event.point.y)).toBeLessThan(MAZE_WALLS[0].radius-.12);
+    }
+    for(let i=0;i<4;i++) for(let t=MAZE_FIRST_IMPACT;t<MAZE_ENTRY_START;t+=.012) {
+      const m=sampleMazeMarble(t,i);if(!m.active) continue;
+      const distance=Math.hypot(m.x,m.y);
+      for(const wall of MAZE_WALLS) if(Math.abs(distance-wall.radius)<.075+m.radius) {
+        const angle=Math.atan2(m.y,m.x)-wall.gate;
+        expect(Math.abs(Math.atan2(Math.sin(angle),Math.cos(angle)))+Math.asin(m.radius/distance)).toBeLessThan(MAZE_GATE_HALF);
+      }
+    }
+  });
   it("routes both starting marbles through openings before the first collision",()=> {
     for(let i=0;i<2;i++) for(let t=0;t<MAZE_FIRST_IMPACT;t+=.012) {
       const m=sampleMazeMarble(t,i),distance=Math.hypot(m.x,m.y);
+      const other=sampleMazeMarble(t,1-i);
+      expect(Math.hypot(m.x-other.x,m.y-other.y)).toBeGreaterThanOrEqual(m.radius+other.radius-1e-7);
       for(const wall of MAZE_WALLS) if(Math.abs(distance-wall.radius)<.075+m.radius) {
         const angle=Math.atan2(m.y,m.x)-wall.gate,difference=Math.atan2(Math.sin(angle),Math.cos(angle));
         expect(Math.abs(difference)+Math.asin(m.radius/distance)).toBeLessThan(MAZE_GATE_HALF);

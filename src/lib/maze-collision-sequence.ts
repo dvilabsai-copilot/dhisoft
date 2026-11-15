@@ -8,7 +8,7 @@ export const MAZE_DOT_BOUNDS=[
 export const MAZE_LOGO={width:2,height:2*325/569,y:.06} as const;
 export const MAZE_WALLS=[{radius:2.05,gate:0},{radius:1.65,gate:Math.PI/2},{radius:1.25,gate:3*Math.PI/2}] as const;
 export const MAZE_GATE_HALF=.23;
-export const MAZE_FIRST_IMPACT=6.35;
+export const MAZE_FIRST_IMPACT=3.85;
 export const MAZE_ENTRY_START=8.3,MAZE_ENTRY_DURATION=.95,MAZE_ENTRY_INTERVAL=1.05;
 export const MAZE_LAST_ENTRY=MAZE_ENTRY_START+3*MAZE_ENTRY_INTERVAL+MAZE_ENTRY_DURATION;
 export const MAZE_D_MOVE_START=17.4,MAZE_D_MOVE_END=19.55;
@@ -18,10 +18,8 @@ export const MAZE_STAGES=[
   {name:"gather-outer",start:.55,end:1.55},
   {name:"enter-outer",start:1.8,end:2.3},
   {name:"follow-middle",start:2.55,end:3.35},
-  {name:"enter-middle",start:3.6,end:4.05},
-  {name:"follow-inner",start:4.3,end:5.4},
-  {name:"meet-third-circle",start:5.65,end:6.1},
-  {name:"pair-contact",start:6.1,end:MAZE_FIRST_IMPACT},
+  {name:"meet-second-circle",start:3.35,end:3.65},
+  {name:"pair-contact",start:3.65,end:MAZE_FIRST_IMPACT},
 ] as const;
 type Point={x:number;y:number};
 const ease=(n:number)=>{const t=Math.max(0,Math.min(1,n));return t*t*(3-2*t);};
@@ -44,16 +42,14 @@ function inCollector(p:Point,time:number) {
   const c=mazeCollector(time),cos=Math.cos(c.angle),sin=Math.sin(c.angle);
   return {x:c.x+(p.x*cos-p.y*sin)*c.scale,y:c.y+(p.x*sin+p.y*cos)*c.scale};
 }
-export const MAZE_FIRST_CONTACTS=[{x:.06,y:-1.45},{x:-.06,y:-1.45}] as const;
+export const MAZE_FIRST_CONTACTS=[{x:-.06,y:1.85},{x:.06,y:1.85}] as const;
 function parentOnStage(index:number,stage:number,q:number):Point {
   const offset=index===0 ? .1 : -.1;
   if(stage===0) return polar(index===0 ? 2.28 : 1.85,mix(index===0 ? -.65 : -1.1,offset,q));
   if(stage===1) return polar(index===0 ? mix(2.28,1.85,q) : 1.85,offset);
   if(stage===2) return polar(1.85,offset+q*Math.PI/2);
-  if(stage===3) return polar(mix(1.85,1.45,q),offset+Math.PI/2);
-  if(stage===4) return polar(1.45,offset+Math.PI/2+q*Math.PI);
-  const start=polar(1.45,offset+3*Math.PI/2),contact=MAZE_FIRST_CONTACTS[index];
-  if(stage===5) return lerp(start,contact,.75*q);
+  const start=polar(1.85,offset+Math.PI/2),contact=MAZE_FIRST_CONTACTS[index];
+  if(stage===3) return lerp(start,contact,.75*q);
   return lerp(lerp(start,contact,.75),contact,q);
 }
 function parentBeforeImpact(time:number,index:number) {
@@ -64,20 +60,24 @@ export type MazePairCollision={time:number;pair:readonly[number,number];child:nu
 function buildMazeSequence(seed:number) {
   let randomState=seed>>>0;
   const random=()=>{randomState=(Math.imul(randomState,1664525)+1013904223)>>>0;return randomState/4294967296;};
-  const secondTime=7.2+random()*.35,secondAngle=3*Math.PI/2+.28+random()*.12;
-  const secondPoint=polar(1.45,secondAngle),tangent={x:-Math.sin(secondAngle),y:Math.cos(secondAngle)};
+  const secondTime=4.7+random()*.35,secondAngle=Math.PI/2+.28+random()*.12;
+  const secondPoint=polar(1.85,secondAngle),tangent={x:-Math.sin(secondAngle),y:Math.cos(secondAngle)};
   const secondContacts=[{x:secondPoint.x-tangent.x*rollingRadius,y:secondPoint.y-tangent.y*rollingRadius},{x:secondPoint.x+tangent.x*rollingRadius,y:secondPoint.y+tangent.y*rollingRadius}];
   const spreadAngles=[.05,-.15,.30,.45];
-const firstSpread=(index:number)=>polar(1.45,3*Math.PI/2+spreadAngles[index%4]);
-const firstRebound=(index:number)=>polar(1.45,3*Math.PI/2+[.12,-.18,.30][index%3]);
+const gateOffsets=[.10,-.10,.035,-.035];
+const firstRebound=(index:number)=>polar(1.85,Math.PI/2+[.12,-.18,.30][index%3]);
 const outsidePose=(time:number,index:number):Point=>{
-  if(time<6.9) return lerp(index===2 ? {x:0,y:-1.45} : MAZE_FIRST_CONTACTS[index%2],firstRebound(index),ease((time-MAZE_FIRST_IMPACT)/.55));
+  const reboundEnd=MAZE_FIRST_IMPACT+.55;
+  if(time<reboundEnd) return lerp(index===2 ? {x:0,y:1.85} : MAZE_FIRST_CONTACTS[index%2],firstRebound(index),ease((time-MAZE_FIRST_IMPACT)/.55));
   if(time<secondTime) {
-    const target=index===0 ? secondContacts[0] : index===2 ? secondContacts[1] : polar(1.45,3*Math.PI/2-.25);
-    return lerp(firstRebound(index),target,ease((time-6.9)/(secondTime-6.9)));
+    const target=index===0 ? secondContacts[0] : index===2 ? secondContacts[1] : polar(1.85,Math.PI/2-.25);
+    return lerp(firstRebound(index),target,ease((time-reboundEnd)/(secondTime-reboundEnd)));
   }
-  const start=index===0 ? secondContacts[0] : index===2 ? secondContacts[1] : index===3 ? secondPoint : polar(1.45,3*Math.PI/2-.25);
-  return lerp(start,firstSpread(index),ease((time-secondTime)/(MAZE_ENTRY_START-secondTime)));
+  const start=index===0 ? secondContacts[0] : index===2 ? secondContacts[1] : index===3 ? secondPoint : polar(1.85,Math.PI/2-.25);
+  if(time<5.4) return lerp(start,polar(1.85,Math.PI/2+gateOffsets[index]),ease((time-secondTime)/(5.4-secondTime)));
+  if(time<6.1) return polar(mix(1.85,1.45,ease((time-5.4)/.7)),Math.PI/2+gateOffsets[index]);
+  if(time<6.35) return polar(1.45,Math.PI/2+gateOffsets[index]);
+  return polar(1.45,mix(Math.PI/2+gateOffsets[index],3*Math.PI/2+spreadAngles[index],ease((time-6.35)/1.4)));
 };
 const entryLocal=(index:number)=>({x:-.27,y:[-.055,.055,-.018,.018][index]});
 const arrival=(index:number)=>MAZE_ENTRY_START+index*MAZE_ENTRY_INTERVAL+MAZE_ENTRY_DURATION;
@@ -89,14 +89,24 @@ function entryAt(time:number,index:number):Point {
 }
 
 function downhill(time:number) {
-  if(time<MAZE_FIRST_IMPACT+.1) {
-    const index=MAZE_STAGES.findIndex(s=>time>=s.start-.16&&time<=s.end+.1);
+  if(time<MAZE_FIRST_IMPACT) {
+    let index=MAZE_STAGES.findIndex(s=>time>=s.start&&time<=s.end);
+    if(index<0) index=MAZE_STAGES.findIndex(s=>time>=s.start-.16&&time<=s.end+.1);
     if(index<0) return {x:0,y:0,stage:"settled"};
     const s=MAZE_STAGES[index],q=ease((time+.06-s.start)/(s.end-s.start));
     let x=0,y=0;
     for(let i=0;i<2;i++) {const a=parentOnStage(i,index,Math.max(0,q-.001)),b=parentOnStage(i,index,Math.min(1,q+.001));x+=b.x-a.x;y+=b.y-a.y;}
     const length=Math.hypot(x,y)||1,strength=Math.sin(.24)*ease((time-s.start+.16)/.16)*(1-ease((time-s.end+.15)/.25));
     return {x:x/length*strength,y:y/length*strength,stage:s.name};
+  }
+  if(time<MAZE_ENTRY_START) {
+    let x=0,y=0;
+    for(let i=0;i<4;i++) {
+      if(time<(i<2 ? 0 : i===2 ? MAZE_FIRST_IMPACT : secondTime)) continue;
+      const a=outsidePose(time-.002,i),b=outsidePose(time+.002,i);x+=b.x-a.x;y+=b.y-a.y;
+    }
+    const length=Math.hypot(x,y),strength=Math.sin(.19)*Math.min(1,length/.0015);
+    return {x:length ? x/length*strength : 0,y:length ? y/length*strength : 0,stage:time<5.4 ? "second-circle-collisions" : time<6.1 ? "enter-middle" : "follow-inner"};
   }
   if(time<MAZE_LAST_ENTRY) {
     const index=[0,1,2,3].find(i=>time>=MAZE_ENTRY_START+i*MAZE_ENTRY_INTERVAL-.12&&time<=arrival(i)+.08);
@@ -116,7 +126,7 @@ function downhill(time:number) {
 
 type Body=Point&{vx:number;vy:number;entered:boolean};
 const bowlCollisions:MazePairCollision[]=[];
-const outsideCollisions:MazePairCollision[]=[{time:MAZE_FIRST_IMPACT,pair:[0,1],child:2,point:{x:0,y:-1.45}},{time:secondTime,pair:[0,2],child:3,point:secondPoint}];
+const outsideCollisions:MazePairCollision[]=[{time:MAZE_FIRST_IMPACT,pair:[0,1],child:2,point:{x:0,y:1.85}},{time:secondTime,pair:[0,2],child:3,point:secondPoint}];
 const births=[0,0,MAZE_FIRST_IMPACT,secondTime,...Array<number>(4).fill(Infinity),0];
 const shakeRate=1.65+random()*.5,shakePhase=random()*Math.PI*2;
 const bowlStart=0,steps=Math.ceil(MAZE_D_MOVE_END*120),dt=MAZE_D_MOVE_END/steps;

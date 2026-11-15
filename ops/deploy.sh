@@ -53,7 +53,8 @@ chown -R www-data:www-data "$BUILD"
 for name in .env .env.local .env.production .env.production.local; do
   if [[ -f $APP/$name ]]; then install -o www-data -g www-data -m 0600 "$APP/$name" "$BUILD/$name"; fi
 done
-runuser -u www-data -- bash -c 'cd "$1" && npm ci --prefer-offline --no-audit && NODE_OPTIONS=--max-old-space-size=3072 npm run build' bash "$BUILD"
+install -d -o www-data -g www-data -m 0700 "$STATE/npm-cache"
+runuser -u www-data -- bash -c 'cd "$1" && export npm_config_cache="$2" && npm ci --prefer-offline --no-audit && NODE_OPTIONS=--max-old-space-size=3072 npm run build' bash "$BUILD" "$STATE/npm-cache"
 test -s "$BUILD/.next/BUILD_ID"
 
 install -d -o root -g root -m 0700 "$BACKUP"
