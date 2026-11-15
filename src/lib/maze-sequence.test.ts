@@ -1,31 +1,23 @@
 import {describe,expect,it} from "vitest";
-import {MAZE_OUTSIDE_COLLISIONS,MAZE_CYCLE,MAZE_ENTRY_START,MAZE_ENTRY_INTERVAL,MAZE_ENTRY_DURATION,MAZE_FIRST_IMPACT,MAZE_GATE_HALF,MAZE_LAST_ENTRY,MAZE_LOGO_END,MAZE_WALLS,createMazeSequence,mazeCollector,mazeDestination,mazeDWallClearance,sampleMazeSequence} from "./maze-sequence";
+import {MAZE_CYCLE,MAZE_ENTRY_START,MAZE_ENTRY_INTERVAL,MAZE_ENTRY_DURATION,MAZE_GATE_HALF,MAZE_LAST_ENTRY,MAZE_LOGO_END,MAZE_WALLS,createMazeSequence,mazeCollector,mazeDestination,mazeDWallClearance,sampleMazeSequence} from "./maze-sequence";
 
 describe("one-by-one maze dots",()=> {
-  it.each([1,2,3,7,42,2026,65535,4294967295])("uses staggered second-ring contacts and seats eight individually, seed %s",seed=>{
+  it.each([1,2,3,7,42,2026,65535,4294967295])("starts two in each ring and seats six individually without multiplication, seed %s",seed=>{
     const sequence=createMazeSequence(seed);
     const count=(t:number)=>sequence.sampleMazeSequence(t).marbles.filter(m=>m.active).length;
     const initial=sequence.sampleMazeSequence(0);
-    expect(count(0)).toBe(3);expect(initial.marbles[8]).toMatchObject({...mazeDestination(8),active:true,docked:true});
-    expect(sequence.outsideCollisions).toHaveLength(6);
-    sequence.outsideCollisions.forEach((event,index)=>{
-      expect(Math.hypot(event.point.x,event.point.y)).toBeCloseTo(1.85,9);
-      if(index) expect(event.time-sequence.outsideCollisions[index-1].time).toBeGreaterThan(.8);
-      expect(count(event.time-.001)).toBe(3+index);expect(count(event.time)).toBe(4+index);
-      const a=sequence.sampleMazeMarble(event.time,event.pair[0]),b=sequence.sampleMazeMarble(event.time,event.pair[1]);
-      expect(Math.hypot(a.x-b.x,a.y-b.y)).toBeCloseTo(a.radius+b.radius,8);
-      expect(sequence.sampleMazeMarble(event.time,event.child).scale).toBe(0);
-    });
-    expect(count(MAZE_ENTRY_START)).toBe(9);
-    expect(new Set(sequence.outsideCollisions.map(e=>`${e.point.x.toFixed(2)},${e.point.y.toFixed(2)}`)).size).toBe(6);
+    expect(count(0)).toBe(9);
+    expect(initial.marbles.filter(m=>m.docked)).toHaveLength(3);
+    for(const radius of [2.28,1.85,1.45]) expect(initial.marbles.filter(m=>!m.docked&&Math.abs(Math.hypot(m.x,m.y)-radius)<.001)).toHaveLength(2);
     expect(MAZE_ENTRY_INTERVAL).toBeGreaterThan(MAZE_ENTRY_DURATION);
-    for(let index=0;index<8;index++) {
+    for(let index=0;index<6;index++) {
       const arrived=MAZE_ENTRY_START+index*MAZE_ENTRY_INTERVAL+MAZE_ENTRY_DURATION;
-      expect(sequence.sampleMazeSequence(arrived+.001).marbles.filter(m=>m.docked)).toHaveLength(index+2);
+      expect(sequence.sampleMazeSequence(arrived+.001).marbles.filter(m=>m.docked)).toHaveLength(index+4);
       for(let t=arrived;t<MAZE_LOGO_END;t+=.18) expect(sequence.sampleMazeMarble(t+.001,index)).toMatchObject({...mazeDestination(index),docked:true});
     }
     for(let t=0;t<MAZE_LOGO_END;t+=.025) {
       const pose=sequence.sampleMazeSequence(t);
+      expect(pose.marbles.filter(m=>m.active)).toHaveLength(9);expect(pose.collision).toBe(0);expect(pose.impacts).toHaveLength(0);
       expect(pose.logo).toBe(1);expect(pose.collector).toEqual(mazeCollector(0));
       const seated=pose.marbles.filter(m=>m.docked);
       for(const marble of pose.marbles) {
@@ -43,31 +35,24 @@ describe("one-by-one maze dots",()=> {
     }
     expect(sequence.sampleMazeSequence(MAZE_LAST_ENTRY+.1).marbles.every(m=>m.docked)).toBe(true);
   });
-  it("starts the first contact in the second ring before four seconds",()=> {
-    expect(MAZE_FIRST_IMPACT).toBeLessThan(4);
-    expect(MAZE_OUTSIDE_COLLISIONS[0].time).toBe(MAZE_FIRST_IMPACT);
+  it("varies starting angles without changing the number of marbles",()=> {
+    expect(createMazeSequence(1).sampleMazeSequence(0).marbles).not.toEqual(createMazeSequence(2).sampleMazeSequence(0).marbles);
+    expect(createMazeSequence(42).sampleMazeSequence(0)).toEqual(createMazeSequence(42).sampleMazeSequence(0));
   });
-  it("makes fresh random collision positions and timing",()=> {
-    expect(createMazeSequence(1).outsideCollisions).not.toEqual(createMazeSequence(2).outsideCollisions);
-    expect(createMazeSequence(42).outsideCollisions).toEqual(createMazeSequence(42).outsideCollisions);
-  });
-  it("tilts toward the single traveling marble and stops tilting after placement",()=> {
-    const sequence=createMazeSequence(42);
-    for(let t=MAZE_ENTRY_START+.01;t<MAZE_LAST_ENTRY;t+=.023) {
-      const h=sequence.mazeHandTilt(t);
-      for(let i=0;i<8;i++) {
-        const start=MAZE_ENTRY_START+i*MAZE_ENTRY_INTERVAL;
-        if(t<start+.003||t>start+MAZE_ENTRY_DURATION-.003) continue;
-        const a=sequence.sampleMazeMarble(t-.001,i),b=sequence.sampleMazeMarble(t+.001,i);
-        expect((b.x-a.x)*h.downhillX+(b.y-a.y)*h.downhillY).toBeGreaterThanOrEqual(-1e-9);
-      }
+  it("uses only three shallow tilt gestures, one for each ring pair",()=> {
+    const sequence=createMazeSequence(42);let gestures=0,moving=false;
+    for(let t=0;t<MAZE_LAST_ENTRY+1;t+=.01) {
+      const h=sequence.mazeHandTilt(t),active=Math.hypot(h.pitch,h.yaw)>.000001;
+      if(active&&!moving) gestures++;moving=active;
+      expect(Math.hypot(h.pitch,h.yaw)).toBeLessThanOrEqual(.100001);
     }
+    expect(gestures).toBe(3);
     expect(sequence.mazeHandTilt(MAZE_LAST_ENTRY+.1)).toMatchObject({pitch:0,yaw:0,stage:"settled"});
   });
-  it("shows all nine fixed dots with reduced motion and replays from three",()=> {
+  it("shows all nine fixed dots with reduced motion and replays with two per ring",()=> {
     const end=sampleMazeSequence(0,true);
     expect(end.logo).toBe(1);expect(end.phase).toBe("still");expect(end.pitch).toBe(0);expect(end.yaw).toBe(0);
     end.marbles.forEach((m,i)=>expect(m).toMatchObject({...mazeDestination(i),active:true,docked:true}));
-    expect(sampleMazeSequence(MAZE_CYCLE).marbles.filter(m=>m.active)).toHaveLength(3);
+    expect(sampleMazeSequence(MAZE_CYCLE).marbles.filter(m=>!m.docked)).toHaveLength(6);
   });
 });
