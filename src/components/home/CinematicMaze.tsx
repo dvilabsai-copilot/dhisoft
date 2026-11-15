@@ -2,7 +2,7 @@
 
 import { useEffect,useRef,useState } from "react";
 import type { MotionValue } from "framer-motion";
-import { MAZE_CYCLE,MAZE_DOT_BOUNDS,MAZE_GATE_HALF,MAZE_LOGO,MAZE_WALLS,createMazeSequence,mazeDestination } from "@/lib/maze-sequence";
+import { MAZE_DOT_BOUNDS,MAZE_GATE_HALF,MAZE_LOGO,MAZE_WALLS,createMazeSequence,mazeDestination } from "@/lib/maze-sequence";
 import { DHI_D_BOUNDS,DHI_D_CENTRE,DHI_D_OUTLINE } from "@/lib/dhi-d-outline";
 
 export default function CinematicMaze({progress,still,paused,replayKey}: {progress:MotionValue<number>;still:boolean;paused:boolean;replayKey:number}) {
@@ -49,20 +49,21 @@ export default function CinematicMaze({progress,still,paused,replayKey}: {progre
       const display=new THREE.Group(),board=new THREE.Group();scene.add(display);display.add(board);
       display.rotation.x=-.62;
 
-      const baseGeometry=new THREE.CylinderGeometry(2.55,2.52,.20,112);baseGeometry.rotateX(Math.PI/2);baseGeometry.translate(0,0,-.005);geometries.push(baseGeometry);
+      const baseGeometry=new THREE.CylinderGeometry(2.88,2.85,.20,112);baseGeometry.rotateX(Math.PI/2);baseGeometry.translate(0,0,-.005);geometries.push(baseGeometry);
       board.add(new THREE.Mesh(baseGeometry,floorMaterial));
-      const rimProfile=[new THREE.Vector2(2.40,.095),new THREE.Vector2(2.40,.23),new THREE.Vector2(2.42,.25),new THREE.Vector2(2.52,.25),new THREE.Vector2(2.55,.22),new THREE.Vector2(2.55,-.06)];
+      const rimProfile=[new THREE.Vector2(2.72,.095),new THREE.Vector2(2.72,.23),new THREE.Vector2(2.74,.25),new THREE.Vector2(2.85,.25),new THREE.Vector2(2.88,.22),new THREE.Vector2(2.88,-.06)];
       const rimGeometry=new THREE.LatheGeometry(rimProfile,112);rimGeometry.rotateX(Math.PI/2);geometries.push(rimGeometry);
       board.add(new THREE.Mesh(rimGeometry,edgeMaterial));
-      MAZE_WALLS.forEach(({radius,gate})=> {
-        const half=.065,start=gate+MAZE_GATE_HALF,end=gate+Math.PI*2-MAZE_GATE_HALF;
+      MAZE_WALLS.forEach(({radius,gates})=> gates.forEach((gate,index)=> {
+        const half=.065,start=gate+MAZE_GATE_HALF;
+        const end=(gates[index+1] ?? gates[0]+Math.PI*2)-MAZE_GATE_HALF;
         const shape=new THREE.Shape();
         shape.absarc(0,0,radius+half,start,end,false);
         shape.lineTo((radius-half)*Math.cos(end),(radius-half)*Math.sin(end));
         shape.absarc(0,0,radius-half,end,start,true);shape.closePath();
         const geometry=new THREE.ExtrudeGeometry(shape,{depth:.14,bevelEnabled:true,bevelSize:.018,bevelThickness:.018,bevelSegments:3,steps:1,curveSegments:72});
         geometry.translate(0,0,.115);geometries.push(geometry);board.add(new THREE.Mesh(geometry,blue));
-      });
+      }));
 
       // The complete brand remains fixed. Marbles roll into the original nine
       // dot positions to the left of the raised D.
@@ -140,8 +141,11 @@ export default function CinematicMaze({progress,still,paused,replayKey}: {progre
         if(!still && !controls.current.paused && logoReady) time+=delta;
         p+=((still ? 0 : progress.get())-p)*.08;
         if(still && !redraw) {frame=requestAnimationFrame(render);return;}
-        const cycleTime=time%MAZE_CYCLE,resetRoll=previousCycleTime<0 || cycleTime<previousCycleTime;
-        if(previousCycleTime>=0&&cycleTime<previousCycleTime) choreography=createMazeSequence(Math.floor(Math.random()*4294967296));
+        let cycleTime=time,resetRoll=previousCycleTime<0;
+        if(time>=choreography.cycle) {
+          time=0;cycleTime=0;resetRoll=true;
+          choreography=createMazeSequence(Math.floor(Math.random()*4294967296));
+        }
         const pose=choreography.sampleMazeSequence(time,still);
         marbles.forEach(({mesh,shadow},index)=> {
           const marble=pose.marbles[index];
@@ -174,17 +178,19 @@ export default function CinematicMaze({progress,still,paused,replayKey}: {progre
         const compact=width<1000,mobile=width<700;
         const cross=THREE.MathUtils.smoothstep(p,.23,.33)*(1-THREE.MathUtils.smoothstep(p,.57,.7));
         const compactScale=Math.min(mobile ? .65 : .8,Math.max(.43,(height-380)/570),width/height*1.28);
-        display.scale.setScalar(compact ? compactScale : .96);
+        display.scale.setScalar(compact ? compactScale*.9 : .88);
         display.position.set(compact ? 0 : 3.1-cross*6.2,compact ? -1.5 : -.05,0);
         board.rotation.set(pose.pitch,pose.yaw,0);
         camera.position.set(0,.45,compact ? 13.2 : 12.6);camera.lookAt(0,.1,0);
         renderer.domElement.style.opacity=String(pose.fade);
         renderer.render(scene,camera);redraw=false;
-        container.dataset.phase=still ? "still" : controls.current.paused ? "paused" : pose.phase;
+        container.dataset.physics="shared-gravity";container.dataset.phase=still ? "still" : controls.current.paused ? "paused" : pose.phase;
+        container.dataset.movingMarbles=String(pose.marbles.filter(m=>!m.docked&&Math.hypot(m.vx,m.vy)>.025).length);
         container.dataset.marbleCount=String(pose.marbles.filter(m=>m.active).length);container.dataset.docked=String(pose.marbles.filter(m=>m.docked).length);
         container.dataset.collisionCount=String(pose.collision);container.dataset.collectorProgress=c.progress.toFixed(3);
         container.dataset.animationTime=time.toFixed(3);container.dataset.pitch=pose.pitch.toFixed(3);
         container.dataset.yaw=pose.yaw.toFixed(3);container.dataset.motionStage=pose.stage;
+        container.dataset.ringCount=String(MAZE_WALLS.length);container.dataset.openingsPerRing=String(MAZE_WALLS[0].gates.length);container.dataset.relayStep=String(pose.relayStep);container.dataset.activeRing=String(pose.activeRing);container.dataset.tiltDirection=pose.direction;
         container.dataset.downhillX=pose.downhillX.toFixed(3);container.dataset.downhillY=pose.downhillY.toFixed(3);
         frame=requestAnimationFrame(render);
       };

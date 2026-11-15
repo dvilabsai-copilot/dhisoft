@@ -10,7 +10,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title: content.seo.title,
     description: content.seo.description,
     keywords: content.seo.keywords,
+    alternates: { canonical: "/" },
     openGraph: {
+      url: "/",
       title: content.seo.title,
       description: content.seo.description,
       images: content.seo.ogImage

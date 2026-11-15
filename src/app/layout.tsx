@@ -2,9 +2,9 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-  title: { default: 'DHISOFT | SaaS & Product Engineering Studio', template: '%s | DHISOFT' },
-  description: 'DHISOFT designs and builds production-oriented SaaS products, workflow systems, APIs and automation for complex businesses.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://dhisoft.in'),
+  title: { default: 'DHISOFT | Custom Software & Product Engineering', template: '%s | DHISOFT' },
+  description: 'DHISOFT designs and engineers custom software, SaaS products, operational workflows and integrations for complex businesses.',
   icons: {
     icon: '/images/dhisoft-logo.png',
     shortcut: '/images/dhisoft-logo.png',

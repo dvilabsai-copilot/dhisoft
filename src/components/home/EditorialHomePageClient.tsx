@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowUpRight,
   ChevronRight,
@@ -16,6 +17,7 @@ import {
 import CinematicHero from "@/components/home/CinematicHero";
 import ContactForm from "@/components/contact/ContactForm";
 import ProjectMedia from "@/components/home/ProjectMedia";
+import SiteMotion from "@/components/home/SiteMotion";
 import VideoModal from "@/components/home/VideoModal";
 import { getCmsIcon } from "@/lib/icon-map";
 import { activeSorted, type CmsProject, type HomeContent } from "@/types/cms";
@@ -221,33 +223,9 @@ const [selectedKey, setSelectedKey] = useState<string>(
 
   const navLinks = content.navigation.links;
 
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const root = document.querySelector<HTMLElement>(".ed");
-    const elements = Array.from(document.querySelectorAll<HTMLElement>(
-      ".ed-section-heading > div, .ed-section-heading > p, .ed-index-item, .ed-stage, .ed-info-card, .ed-domain-card, .ed-process-steps > li, .ed-pricing-card, .ed-contact-form, .ed-footer-grid > div"
-    ));
-    if (!root || !elements.length || !("IntersectionObserver" in window)) return;
-
-    elements.forEach((element) => element.classList.add("ed-reveal"));
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
-
-    elements.forEach((element) => observer.observe(element));
-    root.classList.add("ed-motion-ready");
-    return () => {
-      observer.disconnect();
-      root.classList.remove("ed-motion-ready");
-    };
-  }, []);
-
   return (
     <main className="ed" id="top">
+      <SiteMotion />
       <a className="ed-skip" href="#work">Skip to projects</a>
       <div className="ed-topline" aria-hidden="true" />
       <header className="ed-header">
@@ -257,6 +235,8 @@ const [selectedKey, setSelectedKey] = useState<string>(
           </a>
           <nav id="primary-navigation" className={`ed-nav-links ${mobileNavOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             {navLinks.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileNavOpen(false)}>{link.label}</a>)}
+            <Link href="/services" onClick={() => setMobileNavOpen(false)}>Services</Link>
+            <Link href="/about" onClick={() => setMobileNavOpen(false)}>About</Link>
             <a className="ed-mobile-nav-contact" href={content.navigation.cta.href} onClick={() => setMobileNavOpen(false)}>{content.navigation.cta.label} <ArrowUpRight size={14} aria-hidden="true" /></a>
           </nav>
           <a className="ed-btn ed-btn-dark ed-nav-cta" href={content.navigation.cta.href}>{content.navigation.cta.label} <ArrowUpRight size={14} /></a>
@@ -340,6 +320,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
           <div className="ed-cards ed-cards-four">
             {activeSorted(content.products.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
           </div>
+          <div className="ed-capabilities-footer"><p>Need a specific capability or a complete product team?</p><Link href="/services" className="ed-inline-link">Explore our services <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
           <div className="ed-subsection-heading"><h3>From idea to operation</h3><span>THREE CORE CAPABILITIES</span></div>
           <div className="ed-cards ed-cards-three">
             {activeSorted(content.capabilities.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
@@ -351,7 +332,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 03 / ${domains.eyebrow}`} title={domains.heading} text="Domain-specific workflows demand thoughtful technical choices." />
           <div className="ed-cards ed-domains-grid">
-            {activeSorted(domains.items).map((item) => <article key={item.key} className="ed-domain-card"><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div></article>)}
+            {activeSorted(domains.items).map((item) => <article key={item.key} className="ed-domain-card"><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div>{/travel|hospitality/i.test(item.title) && <Link href="/industries/travel-hospitality" className="ed-inline-link">Travel & hospitality engineering <ArrowUpRight size={16} aria-hidden="true" /></Link>}</article>)}
           </div>
         </div>
       </section>
@@ -372,7 +353,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
         <div className="ed-container ed-pricing-grid"><div><h2>{content.pricing.heading}</h2><p>{content.pricing.description}</p></div><div className="ed-pricing-card"><h3>{content.pricing.priceText}</h3><p>{content.pricing.cardDescription}</p><div className="ed-pills">{["Real users", "Clear constraints", "Useful milestones"].map((item) => <span key={item} className="ed-pill">{item}</span>)}</div></div></div>
       </section>
 
-      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Let’s build what’s next.</h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><div className="ed-contact-links"><a className="ed-btn ed-btn-ghost" href={`mailto:${contactEmail}`}>{contactEmail}<ArrowUpRight size={14} /></a><a className="ed-btn ed-btn-ghost" href="tel:+917207260372"><Phone size={16} aria-hidden="true" />+91 7207260372</a></div></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
+      <section id="contact" className="ed-section ed-contact"><div className="ed-container ed-contact-grid"><div><h2>Let’s build what’s next.</h2><p>Tell us about the workflow, the users, and the problem you&apos;re trying to make simpler.</p><div className="ed-contact-links"><a className="ed-btn ed-btn-ghost" href={`mailto:${contactEmail}`}>{contactEmail}<ArrowUpRight size={14} /></a><a className="ed-btn ed-btn-ghost" href="tel:+917207160372"><Phone size={16} aria-hidden="true" />+91 7207160372</a></div></div><div className="ed-contact-form"><ContactForm endpoint="/api/leads" /></div></div></section>
 
       <footer className="ed-footer"><div className="ed-container"><div className="ed-footer-grid"><div>
       
@@ -380,7 +361,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
   <Image src="/images/dhisoft-logo.png" alt="DHISOFT" width={625} height={451} />
 </a>
 
-<p>{content.footer.description}</p></div><div><h2>Explore</h2>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><h2>Contact</h2><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${contactEmail}`}>Email DHISOFT ↗</a><a href="tel:+917207260372">+91 7207260372</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
+<p>{content.footer.description}</p></div><div><h2>Explore</h2>{[{ label: "Selected work", href: "#work" }, { label: "What we build", href: "#capabilities" }, { label: "All services", href: "/services" }, { label: "Travel & hospitality", href: "/industries/travel-hospitality" }, { label: "About DHI", href: "/about" }, { label: "Industries", href: "#domains" }, { label: "Engineering", href: "#engineering" }, { label: "Process", href: "#process" }].map((link) => link.href.startsWith("/") ? <Link key={link.href} href={link.href}>{link.label}</Link> : <a key={link.href} href={link.href}>{link.label}</a>)}</div><div><h2>Contact</h2><a href="https://github.com/dvilabsai-copilot/dhisoft" target="_blank" rel="noopener noreferrer">GitHub repository ↗</a><a href={`mailto:${contactEmail}`}>Email DHISOFT ↗</a><a href="tel:+917207160372">+91 7207160372</a><a href="#contact">Start a project ↗</a></div></div><div className="ed-footer-wordmark ed-reveal" aria-hidden="true">DHISOFT</div><div className="ed-footer-bottom"><span>© {new Date().getFullYear()} {content.footer.brandName}</span><span>Real products. Clear scope. No invented outcomes.</span></div></div></footer>
 
       {detailProject && <ProjectDetail key={detailProject.key} project={detailProject} onClose={closeDetails} onPlay={setPlaying} />}
       {playing && <VideoModal project={playing} onClose={() => setPlaying(null)} />}
