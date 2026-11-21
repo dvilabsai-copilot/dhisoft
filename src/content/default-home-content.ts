@@ -172,7 +172,7 @@ export const defaultHomeContent: HomeContent = {
         sortOrder: 10,
         isActive: true,
         videoSource: "mp4",
-        videoUrl: "/media/projects/community-project-demo.mp4",
+        videoUrl: "/media/projects/rural-skill-os-i.mp4",
         githubUrl:
           "https://github.com/kkversile/dhisoft-rural-skill-livelihood-os",
       },
@@ -269,7 +269,7 @@ export const defaultHomeContent: HomeContent = {
         sortOrder: 50,
         isActive: true,
         videoSource: "mp4",
-        videoUrl: "/media/projects/community-project-demo.mp4",
+        videoUrl: "/media/projects/mortgage-uwa.mp4",
         githubUrl: "https://github.com/kkversile/mortgage-uwa-v0.1",
       },
       
@@ -296,7 +296,7 @@ export const defaultHomeContent: HomeContent = {
   isActive: true,
  
   videoSource: "mp4",
-  videoUrl: "/media/projects/voya-vendor-platform(2).mp4",
+  videoUrl: "/media/projects/voya-vendor-platform-updated-i.mp4",
   liveDemoUrl: "https://demo.dhisoft.in/voya",
 
 },
