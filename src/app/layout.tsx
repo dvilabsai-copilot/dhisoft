@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/opengraph-image",
+        url: "/social-preview",
         width: 1200,
         height: 630,
         alt: "DHISOFT — Custom software and SaaS engineering",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Custom Software Development & SaaS Engineering | DHISOFT",
     description,
-    images: ["/opengraph-image"],
+    images: ["/social-preview"],
   },
   icons: {
     icon: "/images/dhisoft-logo.png",

@@ -41,13 +41,13 @@ export async function generateMetadata({
       url: "/services/" + slug,
       title: service.title + " | DHISOFT",
       description,
-      images: ["/opengraph-image"],
+      images: ["/social-preview"],
     },
     twitter: {
       card: "summary_large_image",
       title: service.title + " | DHISOFT",
       description,
-      images: ["/opengraph-image"],
+      images: ["/social-preview"],
     },
   };
 }

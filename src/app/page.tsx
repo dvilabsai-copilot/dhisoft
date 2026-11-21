@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const image =
     configuredImage && !/\.(?:avif|svg)(?:[?#]|$)/i.test(configuredImage)
       ? configuredImage
-      : "/opengraph-image";
+      : "/social-preview";
 
   return {
     // The CMS title already contains DHISOFT; avoid appending it twice.
