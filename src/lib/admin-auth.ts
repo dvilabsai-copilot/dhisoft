@@ -84,7 +84,8 @@ export function sameOrigin(request: Request): Response | null {
   const origin = request.headers.get("origin");
   if (!origin) return null;
   try {
-    if (new URL(origin).host !== new URL(request.url).host)
+    const expectedOrigin = new URL(process.env.DHISOFT_ADMIN_ORIGIN ?? request.url).origin;
+    if (new URL(origin).origin !== expectedOrigin)
       return new Response("Forbidden", { status: 403 });
   } catch {
     return new Response("Forbidden", { status: 403 });

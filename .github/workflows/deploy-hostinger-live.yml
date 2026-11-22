@@ -1,0 +1,47 @@
+name: Deploy frontend to live.dhisoft.in
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dhisoft-live-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Check out the selected revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Publish frontend on Hostinger
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_KEY: ${{ secrets.DHISOFT_LIVE_DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          main_revision="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [[ "$GITHUB_SHA" != "$main_revision" ]]; then
+            printf '%s\n' 'A newer main revision is available. Skipping this older deployment.'
+            exit 0
+          fi
+          umask 077
+          test -n "$DEPLOY_KEY"
+          ssh_dir="$(mktemp -d)"
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          printf '%s\n' "$DEPLOY_KEY" > "$ssh_dir/key"
+          printf '%s\n' '189.72.156.212 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHd537bqKbawb+/Gm0tZdF8KFcorPOWVHujQVrUQOAZ' > "$ssh_dir/known_hosts"
+          git archive --format=tar.gz "$GITHUB_SHA" |
+            ssh -T -i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts" \
+              -o ConnectTimeout=15 -o ConnectionAttempts=3 -o ServerAliveInterval=20 -o ServerAliveCountMax=6 \
+              dhisoft-live-ci@189.72.156.212 "deploy $GITHUB_SHA"
