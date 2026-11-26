@@ -62,11 +62,37 @@ function ServiceLink({ service }: { service: ServicePageContent }) {
   return <Link href={`/services/${service.slug}`} className="ed-service-link"><span><strong>{service.title}</strong><small>{service.summary}</small></span><ArrowUpRight size={19} aria-hidden="true" /></Link>;
 }
 
+function ProjectPlanningSection({ planning }: { planning: NonNullable<ServicePageContent["planning"]> }) {
+  return (
+    <section className="ed-sub-section ed-project-planning">
+      <div className="ed-container ed-service-story">
+        <div>
+          <h2>{planning.title}</h2>
+          <ol>
+            {planning.items.map(({ title, description }) => (
+              <li key={title}><h3>{title}</h3><p>{description}</p></li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <h2>Questions before you start</h2>
+          <div className="ed-planning-answers">
+            {planning.questions.map(({ question, answer }) => (
+              <div key={question}><h3>{question}</h3><p>{answer}</p></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function ServiceDetailPage({ service }: { service: ServicePageContent }) {
   return <PageFrame><div id="main-content" className="ed-sub-main">
     <section className="ed-sub-hero"><div className="ed-container"><Link className="ed-back-link" href="/services"><ArrowLeft size={15} aria-hidden="true" /> All services</Link><h1>{service.title}</h1><p>{service.summary}</p><Link className="ed-btn ed-btn-dark" href="/#contact">Discuss your project <ArrowUpRight size={15} aria-hidden="true" /></Link></div></section>
     <section className="ed-sub-section"><div className="ed-container ed-service-story"><div><h2>The problem</h2><p>{service.problem}</p><h2>How we approach it</h2><p>{service.approach}</p></div><div><h2>What we can build</h2><ul>{service.solution.map((item) => <li key={item}>{item}</li>)}</ul><h2>Common use cases</h2><ul>{service.useCases.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>
     {service.relatedWork.length > 0 && <section className="ed-sub-work"><div className="ed-container"><h2>Related work in the portfolio</h2><p>Explore the systems and demos already represented in the DHISOFT portfolio.</p><div className="ed-sub-project-links">{service.relatedWork.map((name) => <Link key={name} href={portfolioHref(name)}>{name}<ArrowUpRight size={15} aria-hidden="true" /></Link>)}</div></div></section>}
+    {service.planning && <ProjectPlanningSection planning={service.planning} />}
     <section className="ed-sub-section ed-sub-back"><div className="ed-container"><Link href="/services"><ArrowLeft size={15} aria-hidden="true" /> Browse all services</Link></div></section>
     <ContactCallout />
   </div></PageFrame>;
@@ -77,6 +103,7 @@ export function TravelIndustryPage() {
     <section className="ed-sub-hero ed-travel-hero"><div className="ed-container"><Link className="ed-back-link" href="/services"><ArrowLeft size={15} aria-hidden="true" /> Services</Link><h1>{travelIndustry.title}</h1><p>{travelIndustry.summary}</p><Link className="ed-btn ed-btn-dark" href="/#contact">Discuss a travel product <ArrowUpRight size={15} aria-hidden="true" /></Link></div></section>
     <section className="ed-sub-section"><div className="ed-container ed-service-story"><div><h2>One journey. Many connected steps.</h2><p>{travelIndustry.problem}</p><h2>Designed around the booking lifecycle</h2><p>{travelIndustry.approach}</p></div><div><h2>Travel product capabilities</h2><ul>{travelIndustry.capabilities.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>
     <section className="ed-sub-work"><div className="ed-container"><h2>Travel software we’ve built</h2><p>See how room reservations, vendor onboarding and agent bookings work in these projects.</p><div className="ed-sub-project-links">{travelIndustry.work.map((name) => <Link key={name} href={portfolioHref(name)}>{name}<ArrowUpRight size={15} aria-hidden="true" /></Link>)}</div></div></section>
+    <ProjectPlanningSection planning={travelIndustry.planning} />
     <ContactCallout />
   </div></PageFrame>;
 }

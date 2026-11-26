@@ -335,7 +335,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
           <div className="ed-cards ed-cards-four">
             {activeSorted(content.products.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
           </div>
-          <div className="ed-capabilities-footer"><p>Need a specific capability or a complete product team?</p><Link href="/services" className="ed-inline-link">Explore our services <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+          <div className="ed-capabilities-footer"><p>We help businesses scope and build customer portals, operations tools, and software integrations.</p><Link href="/services/custom-software" className="ed-inline-link">Custom software development services <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
           <div className="ed-subsection-heading"><h3>From idea to operation</h3><span>THREE CORE CAPABILITIES</span></div>
           <div className="ed-cards ed-cards-three">
             {activeSorted(content.capabilities.items).map((item) => { const Icon = getCmsIcon(item.icon); return <article key={item.key} className="ed-info-card"><Icon size={23} /><h3>{item.title}</h3><p>{item.text}</p></article>; })}
@@ -347,7 +347,7 @@ const [selectedKey, setSelectedKey] = useState<string>(
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 03 / ${domains.eyebrow}`} title={domains.heading} text="Domain-specific workflows demand thoughtful technical choices." />
           <div className="ed-cards ed-domains-grid">
-            {activeSorted(domains.items).map((item) => <article key={item.key} className="ed-domain-card"><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div>{/travel|hospitality/i.test(item.title) && <Link href="/industries/travel-hospitality" className="ed-inline-link">Travel & hospitality engineering <ArrowUpRight size={16} aria-hidden="true" /></Link>}</article>)}
+            {activeSorted(domains.items).map((item) => <article key={item.key} className="ed-domain-card"><h3>{item.title}</h3><p>{item.description}</p><div className="ed-pills">{item.items.map((label) => <span key={label} className="ed-pill">{label}</span>)}</div>{/travel|hospitality/i.test(item.title) && <Link href="/industries/travel-hospitality" className="ed-inline-link">Travel software development <ArrowUpRight size={16} aria-hidden="true" /></Link>}</article>)}
           </div>
         </div>
       </section>

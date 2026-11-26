@@ -1,3 +1,9 @@
+type ProjectPlanning = {
+  title: string;
+  items: { title: string; description: string }[];
+  questions: { question: string; answer: string }[];
+};
+
 export type ServicePageContent = {
   slug: string;
   title: string;
@@ -8,6 +14,7 @@ export type ServicePageContent = {
   useCases: string[];
   approach: string;
   relatedWork: string[];
+  planning?: ProjectPlanning;
 };
 
 export const servicePages: ServicePageContent[] = [
@@ -17,9 +24,21 @@ export const servicePages: ServicePageContent[] = [
     summary: "DHISOFT builds custom web applications, business portals and workflow software for teams that have outgrown spreadsheets and disconnected tools.",
     problem: "When a process spans spreadsheets, inboxes and disconnected tools, teams lose context and work becomes difficult to track.",
     solution: ["Web applications and business portals", "Role-based workflows and approvals", "Operational dashboards and reporting", "Data models that reflect real business rules"],
-    useCases: ["Replace manual handoffs", "Give customers or partners a self-service portal", "Bring operational records into one workflow"],
+    useCases: ["Use an internal operations application to replace spreadsheet approvals", "Give customers or partners a self-service portal", "Bring orders, bookings or case records into one workflow"],
     approach: "We map who uses the software, what decisions they make, and where data needs to move. A first release can cover one workflow from intake through completion, including the permissions, exceptions and integrations it needs to run.",
     relatedWork: ["RainWood Direct Booking Engine", "Rural Skill & Livelihood OS", "Travel OS", "Yes We Care Admin Panel"],
+    planning: {
+      title: "What to prepare before scoping custom software",
+      items: [
+        { title: "Bring one real workflow", description: "Walk through a recent request from intake to completion. Show where staff copy data, wait for approval or handle exceptions. This gives the team a concrete starting point for a first release." },
+        { title: "Separate users and system responsibilities", description: "List who creates, approves and views each record. Identify which records already live in accounting, CRM or another tool, and which system should own them after launch." },
+        { title: "Agree on a release you can test", description: "Pick a group of users, define what a successful handoff looks like and include failure cases such as missing information or a rejected approval." },
+      ],
+      questions: [
+        { question: "Can you integrate with software we already use?", answer: "Yes, where the existing system provides a suitable API or export. We check access, data ownership and failure handling before committing to the integration. A staged rollout can keep everyday work running while a new workflow is introduced." },
+        { question: "What affects the cost and timeline?", answer: "The number of workflows and user roles, the condition of the existing data, the integrations, and the launch requirements all affect scope. A single workflow with known rules is easier to estimate than a full system replacement." },
+      ],
+    },
   },
   {
     slug: "saas-product-engineering",
@@ -72,12 +91,24 @@ export function getServicePage(slug: string) {
 }
 
 export const travelIndustry = {
-  title: "Travel & hospitality software development",
-  summary: "DHISOFT builds direct booking engines, travel vendor portals and supplier integrations for hotels, agencies and travel marketplaces.",
+  title: "Travel software development",
+  summary: "DHISOFT builds hotel booking engines, tour operator booking systems, travel agent portals and supplier integrations for travel and hospitality businesses.",
   problem: "Travel workflows cross customers, agents, properties, suppliers, availability and payments. When those steps live in separate tools, teams have to bridge the gaps by hand.",
   capabilities: ["Direct booking and reservation flows", "Travel enquiry, itinerary and quotation workflows", "Vendor and agent-facing product surfaces", "Availability, booking and operational records", "Supplier APIs, payment events and background jobs"],
   approach: "We model the booking lifecycle and its edge cases first: availability, holds, confirmation, cancellation and recovery. The product experience and integration boundaries are then designed around that lifecycle.",
   work: ["RainWood Direct Booking Engine", "Voya Vendor Platform", "Travel OS"],
+  planning: {
+    title: "What your travel booking system needs to handle",
+    items: [
+      { title: "Direct hotel booking", description: "Decide where room inventory and rates come from. Account for occupancy rules, temporary room holds, payment confirmation and cancellations that return a room to inventory. RainWood shows this lifecycle in a direct booking system." },
+      { title: "Tour operator and activity booking", description: "For a guided experience such as a food tour, define bookable departures, seats per departure, the booking cut-off and who can reschedule a guest. Voya shows how vendors publish experiences and how agents book them." },
+      { title: "Agent portals and supplier APIs", description: "Decide which system owns availability, who issues the voucher and what the agent sees while a supplier confirmation is pending. A repeated payment or supplier event should never create a second reservation." },
+    ],
+    questions: [
+      { question: "When should we build a custom booking engine?", answer: "Consider a custom engine when your inventory, pricing, cancellation or fulfilment rules are central to your offering and your current platform cannot support them cleanly. If your rules are standard, an existing platform may cover the workflow with less implementation work." },
+      { question: "What drives the scope of a travel software project?", answer: "The main factors are how many systems supply availability, how prices and capacity change, and who manages refunds, vouchers and settlements. Start by mapping one booking from search through confirmation and cancellation for a single product type." },
+    ],
+  } satisfies ProjectPlanning,
 };
 
 export const aboutDhi = {

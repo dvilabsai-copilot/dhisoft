@@ -282,6 +282,9 @@
 .ed .ed-service-story h2:not(:first-child) { margin-top: 44px; }
 .ed .ed-service-story p, .ed .ed-service-story li, .ed .ed-about-copy li { color: #304a69; font-size: 17px; line-height: 1.7; }
 .ed .ed-service-story ul, .ed .ed-about-copy ul { display: grid; gap: 12px; margin: 4px 0 0; padding-left: 22px; }
+.ed .ed-project-planning :is(ol, .ed-planning-answers) { display: grid; gap: 22px; margin: 4px 0 0; }
+.ed .ed-project-planning ol { list-style: decimal; padding-left: 24px; }
+.ed .ed-project-planning h3 { margin: 0 0 4px; color: var(--ed-ink); font-size: 18px; font-weight: 700; }
 .ed .ed-sub-work { padding: clamp(64px, 8vw, 100px) 0; background: #0c2e50; color: #fff; }
 .ed .ed-sub-work h2 { color: #fff; }
 .ed .ed-sub-work > .ed-container > p { max-width: 62ch; color: #dce8f5; font-size: 17px; }
