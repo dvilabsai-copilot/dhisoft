@@ -102,6 +102,23 @@ export function TravelIndustryPage() {
   return <PageFrame><div id="main-content" className="ed-sub-main">
     <section className="ed-sub-hero ed-travel-hero"><div className="ed-container"><Link className="ed-back-link" href="/services"><ArrowLeft size={15} aria-hidden="true" /> Services</Link><h1>{travelIndustry.title}</h1><p>{travelIndustry.summary}</p><Link className="ed-btn ed-btn-dark" href="/#contact">Discuss a travel product <ArrowUpRight size={15} aria-hidden="true" /></Link></div></section>
     <section className="ed-sub-section"><div className="ed-container ed-service-story"><div><h2>One journey. Many connected steps.</h2><p>{travelIndustry.problem}</p><h2>Designed around the booking lifecycle</h2><p>{travelIndustry.approach}</p></div><div><h2>Travel product capabilities</h2><ul>{travelIndustry.capabilities.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>
+    <section className="ed-sub-section">
+      <div className="ed-container ed-service-story">
+        <div>
+          <h2>{travelIndustry.webApps.title}</h2>
+          <p>{travelIndustry.webApps.description}</p>
+          <p>{travelIndustry.webApps.example}</p>
+          <Link href={caseStudyHref("voya-vendor-platform")} className="ed-inline-link">
+            See the Voya travel booking app <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+        <div>
+          <h2>{travelIndustry.foodTours.title}</h2>
+          <p>{travelIndustry.foodTours.description}</p>
+          <ul>{travelIndustry.foodTours.workflow.map((step) => <li key={step}>{step}</li>)}</ul>
+        </div>
+      </div>
+    </section>
     <section className="ed-sub-work"><div className="ed-container"><h2>Travel software we’ve built</h2><p>See how room reservations, vendor onboarding and agent bookings work in these projects.</p><div className="ed-sub-project-links">{travelIndustry.work.map((name) => <Link key={name} href={portfolioHref(name)}>{name}<ArrowUpRight size={15} aria-hidden="true" /></Link>)}</div></div></section>
     <ProjectPlanningSection planning={travelIndustry.planning} />
     <ContactCallout />

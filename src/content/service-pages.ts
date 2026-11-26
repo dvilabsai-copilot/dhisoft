@@ -92,16 +92,31 @@ export function getServicePage(slug: string) {
 
 export const travelIndustry = {
   title: "Travel software development",
-  summary: "DHISOFT builds hotel booking engines, tour operator booking systems, travel agent portals and supplier integrations for travel and hospitality businesses.",
+  summary: "DHISOFT builds travel booking web apps, hotel booking engines, travel agent portals and food tour booking software for travel and hospitality businesses.",
   problem: "Travel workflows cross customers, agents, properties, suppliers, availability and payments. When those steps live in separate tools, teams have to bridge the gaps by hand.",
   capabilities: ["Direct booking and reservation flows", "Travel enquiry, itinerary and quotation workflows", "Vendor and agent-facing product surfaces", "Availability, booking and operational records", "Supplier APIs, payment events and background jobs"],
   approach: "We model the booking lifecycle and its edge cases first: availability, holds, confirmation, cancellation and recovery. The product experience and integration boundaries are then designed around that lifecycle.",
   work: ["RainWood Direct Booking Engine", "Voya Vendor Platform", "Travel OS"],
+  webApps: {
+    title: "Travel app development for booking and operations",
+    description: "We build browser-based travel apps that guests can use on a phone or desktop. Guests can find an available date and book, agents can make reservations, and vendors can manage listings and availability from their own workspace.",
+    example: "The Voya Vendor Platform shows how vendors list tours and attractions, and how agents find and book those experiences.",
+  },
+  foodTours: {
+    title: "Food tour booking software",
+    description: "Give guests a clear view of tour dates, start times, meeting points and remaining seats. Give operators a way to manage capacity, guest changes and the list their guide needs on the day.",
+    workflow: [
+      "Publish departures with a seat limit, minimum group size and booking cut-off.",
+      "Hold the selected seats during checkout and return them to availability if the hold expires.",
+      "Let staff move a guest to a departure with capacity and update both departure lists together.",
+      "Give guides a list of confirmed guests, group sizes and any dietary notes guests chose to share.",
+    ],
+  },
   planning: {
     title: "What your travel booking system needs to handle",
     items: [
       { title: "Direct hotel booking", description: "Decide where room inventory and rates come from. Account for occupancy rules, temporary room holds, payment confirmation and cancellations that return a room to inventory. RainWood shows this lifecycle in a direct booking system." },
-      { title: "Tour operator and activity booking", description: "For a guided experience such as a food tour, define bookable departures, seats per departure, the booking cut-off and who can reschedule a guest. Voya shows how vendors publish experiences and how agents book them." },
+      { title: "Tour operator and activity booking", description: "Choose who can publish departures or close sales. Decide whether vouchers are issued immediately or only after a guide or supplier confirms the booking." },
       { title: "Agent portals and supplier APIs", description: "Decide which system owns availability, who issues the voucher and what the agent sees while a supplier confirmation is pending. A repeated payment or supplier event should never create a second reservation." },
     ],
     questions: [
