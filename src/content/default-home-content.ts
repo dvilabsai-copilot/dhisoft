@@ -1,4 +1,5 @@
 import type { HomeContent } from "../types/cms";
+import { homeSearchDescription, homeSearchTitle } from "./home-seo";
 
 export const defaultHomeContent: HomeContent = {
   navigation: {
@@ -13,9 +14,8 @@ export const defaultHomeContent: HomeContent = {
     cta: { label: "Discuss your project", href: "#contact" },
   },
   seo: {
-    title: "DHISOFT | SaaS & Product Engineering Studio",
-    description:
-      "DHISOFT designs and builds production-oriented SaaS products, workflow systems, APIs and automation for complex businesses.",
+    title: homeSearchTitle,
+    description: homeSearchDescription,
     keywords: [
       "SaaS product engineering",
       "multi-tenant platforms",
@@ -197,8 +197,9 @@ export const defaultHomeContent: HomeContent = {
         featured: true,
         sortOrder: 20,
         isActive: true,
-        videoSource: "mp4",
-        videoUrl: "/media/projects/community-project-demo.mp4",
+        videoSource: "none",
+        posterImage: "/images/projects/rainwood-direct-booking.jpg",
+        liveDemoUrl: "https://demo.dhisoft.in/rainwood",
         githubUrl: "https://github.com/kkversile/rainwood",
       },
       {

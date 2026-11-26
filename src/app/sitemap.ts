@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { caseStudies, caseStudyHref } from "@/content/case-studies";
 import { servicePages } from "@/content/service-pages";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -7,12 +8,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/services",
     ...servicePages.map(({ slug }) => `/services/${slug}`),
+    ...caseStudies.map(({ slug }) => caseStudyHref(slug)),
     "/industries/travel-hospitality",
     "/about",
   ];
-  return paths.map((path) => ({
-    url: new URL(path, siteUrl).toString(),
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "/services" ? 0.8 : 0.65,
-  }));
+  return paths.map((path) => ({ url: new URL(path, siteUrl).toString() }));
 }

@@ -22,11 +22,13 @@ import VideoModal from "@/components/home/VideoModal";
 import { getCmsIcon } from "@/lib/icon-map";
 import { activeSorted, type CmsProject, type HomeContent } from "@/types/cms";
 import { defaultHomeContent } from "@/content/default-home-content";
+import { caseStudies, caseStudyHref, getCaseStudy } from "@/content/case-studies";
 import "./editorial-home.css";
 
 type ProjectFilter = "All" | "Travel" | "Healthcare" | "SaaS" | "Finance";
 const filters: ProjectFilter[] = ["All", "Travel", "Healthcare", "SaaS", "Finance"];
 const projectPosterByKey: Record<string, string> = {
+  "rainwood": "/images/projects/rainwood-direct-booking.jpg",
   "community-events": "/images/projects/community-events.jpg",
   "voya-vendor-platform": "/images/projects/voya-vendor-platform-pr6.jpg",
   "yes-we-care": "/images/projects/yes-we-care-pr6.jpg",
@@ -57,6 +59,7 @@ function ProjectLinks({
   compact?: boolean;
 }) {
   const canWatch = Boolean(project.videoUrl && project.videoSource !== "none");
+  const study = getCaseStudy(project.slug);
   return (
     <div className={`ed-actions ${compact ? "ed-actions-compact" : ""}`}>
       {canWatch && (
@@ -74,7 +77,11 @@ function ProjectLinks({
           GitHub <ArrowUpRight size={14} aria-hidden="true" />
         </a>
       )}
-      {project.caseStudyUrl && (
+      {study ? (
+        <Link className="ed-btn ed-btn-ghost" href={caseStudyHref(study.slug)}>
+          Read case study <ArrowUpRight size={14} aria-hidden="true" />
+        </Link>
+      ) : project.caseStudyUrl && (
         <a className="ed-btn ed-btn-ghost" href={project.caseStudyUrl} target="_blank" rel="noopener noreferrer">
           Case study <ArrowUpRight size={14} aria-hidden="true" />
         </a>
@@ -184,7 +191,10 @@ const [selectedKey, setSelectedKey] = useState<string>(
   const domains = content.domains ?? defaultHomeContent.domains!;
   const principles = content.principles ?? defaultHomeContent.principles!;
   const engagement = content.engagement ?? defaultHomeContent.engagement!;
-  const projects = useMemo(() => activeSorted(portfolio.projects), [portfolio.projects]);
+  const projects = useMemo(() => activeSorted(portfolio.projects).map((project): CmsProject => {
+    if (project.key !== "rainwood" || project.videoUrl !== "/media/projects/community-project-demo.mp4") return project;
+    return { ...project, videoSource: "none", videoUrl: undefined };
+  }), [portfolio.projects]);
   const visibleProjects = useMemo(() => projects.filter((project) => {
     if (selectedFilter !== "All" && projectGroup(project) !== selectedFilter) return false;
     const text = [project.title, project["eyebrow"], project.category, project.shortDescription, project.description, ...project.stack, ...project.capabilities].join(" ").toLowerCase();
@@ -253,6 +263,11 @@ const [selectedKey, setSelectedKey] = useState<string>(
       <section id="work" className="ed-section ed-work">
         <div className="ed-container">
           <EditorialSectionIntro kicker={`INDEX 01 / ${portfolio.eyebrow}`} title={portfolio.heading} text={portfolio.description} />
+          <nav className="ed-case-study-links" aria-label="Featured case studies">
+            {caseStudies.map((study) => <Link key={study.slug} href={caseStudyHref(study.slug)} className="ed-inline-link">
+              {study.title} case study <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>)}
+          </nav>
           <div className="ed-work-tools">
             <div className="ed-filters" role="group" aria-label="Filter projects">
               {filters.map((filter) => <button key={filter} type="button" aria-pressed={selectedFilter === filter} onClick={() => setSelectedFilter(filter)}>{filter}</button>)}

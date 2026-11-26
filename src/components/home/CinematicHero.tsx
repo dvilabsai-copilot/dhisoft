@@ -14,7 +14,7 @@ const FlatBlocksAnimation = dynamic(() => import("./CinematicFlatBlocks"), { ssr
 const MazeAnimation = dynamic(() => import("./CinematicMaze"), { ssr: false });
 
 const chapters = [
-  { title: ["Big ideas.", "Working software."], text: "We turn complex business workflows into products that feel simple. Design, engineering and delivery, connected.", name: "The challenge" },
+  { title: ["Big ideas.", "Working software."], text: "DHISOFT is a custom software development company in Hyderabad, India. We build SaaS products, booking platforms and workflow software.", name: "The challenge" },
   { title: ["Every part.", "Working together."], text: "People, processes, data and integrations. We design the connections that make the whole system work.", name: "The connection" },
   { title: ["Built to work.", "Ready to evolve."], text: "From your first useful release to the next stage of growth. One engineering partner, from idea to operation.", name: "The product" },
 ];
