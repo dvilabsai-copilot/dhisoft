@@ -1,0 +1,60 @@
+name: Deploy demo index
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ops/demo-index/index.html'
+      - '.github/workflows/deploy-demo-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dhisoft-demo-index
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the selected revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Publish and verify the demo index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_KEY: ${{ secrets.DHISOFT_DEMO_INDEX_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          index=ops/demo-index/index.html
+          checked_out_blob="$(git rev-parse "HEAD:$index")"
+          main_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$index?ref=main" --jq .sha)"
+          if [[ "$checked_out_blob" != "$main_blob" ]]; then
+            echo 'A newer demo index is available on main. Skipping this older version.'
+            exit 0
+          fi
+
+          test -n "$DEPLOY_KEY"
+          umask 077
+          ssh_dir="$(mktemp -d)"
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          printf '%s\n' "$DEPLOY_KEY" | tr -d '\r' > "$ssh_dir/key"
+          printf '%s\n' '189.72.156.212 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHd537bqKbawb+/Gm0tZdF8KFcorPOWVHujQVrUQOAZ' > "$ssh_dir/known_hosts"
+          digest="$(sha256sum "$index" | cut -d ' ' -f 1)"
+          {
+            printf '%s\n' "$digest"
+            cat "$index"
+          } | ssh -T -i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts" \
+            -o ConnectTimeout=15 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
+            dhisoft-demo-index-ci@189.72.156.212
+
+          curl --fail --silent --show-error --retry 2 --max-time 15 https://demo.dhisoft.in/ -o "$ssh_dir/live-index"
+          cmp "$index" "$ssh_dir/live-index"
+          echo 'The live demo index matches the deployed source.'

@@ -3,6 +3,9 @@ name: Deploy frontend to live.dhisoft.in
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'ops/demo-index/**'
+      - '.github/workflows/deploy-demo-index.yml'
   workflow_dispatch:
 
 permissions:
