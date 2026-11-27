@@ -18,6 +18,7 @@ import CinematicHero from "@/components/home/CinematicHero";
 import ContactForm from "@/components/contact/ContactForm";
 import ProjectMedia from "@/components/home/ProjectMedia";
 import SiteMotion from "@/components/home/SiteMotion";
+import TechnologyShowcase from "@/components/home/TechnologyShowcase";
 import VideoModal from "@/components/home/VideoModal";
 import { getCmsIcon } from "@/lib/icon-map";
 import { activeSorted, type CmsProject, type HomeContent } from "@/types/cms";
@@ -352,8 +353,23 @@ const [selectedKey, setSelectedKey] = useState<string>(
         </div>
       </section>
 
-      <section id="engineering" className="ed-section ed-engineering">
-        <div className="ed-container ed-engineering-grid"><div><h2>{content.platform.heading}</h2><p>{content.platform.description}</p><div className="ed-engineering-features">{content.platform.features.map((item) => <div key={item}><ArrowUpRight size={15} />{item}</div>)}</div></div></div>
+      <section id="engineering" className="ed-section ed-engineering" aria-labelledby="engineering-heading">
+        <div className="ed-container">
+          <div className="ed-section-heading ed-tech-intro">
+            <h2 id="engineering-heading">What we offer</h2>
+            <p>Explore the technologies we use to build custom software, from the interface to the infrastructure that runs it.</p>
+          </div>
+          <TechnologyShowcase />
+          <div className="ed-engineering-overview">
+            <h3>{content.platform.heading}</h3>
+            <p>{content.platform.description}</p>
+            <div className="ed-engineering-features">
+              {content.platform.features.map((item) => (
+                <div key={item}><ArrowUpRight size={15} aria-hidden="true" />{item}</div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="principles" className="ed-section">
