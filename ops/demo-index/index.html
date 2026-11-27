@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore live DHISOFT project demos in travel, hospitality, healthcare, and business operations.">
+  <title>Live project demos | DHISOFT</title>
+  <link rel="icon" href="https://dhisoft.in/images/dhisoft-logo.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #10243a;
+      --muted: #354e6d;
+      --blue: #0855a4;
+      --pale: #e8eff6;
+      --paper: #fff;
+      --background: #f5f7fa;
+      --gutter: clamp(18px, 4vw, 56px);
+      font: 100%/1.55 Arial, Helvetica, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--ink); }
+    img { display: block; }
+    h1, h2, h3, p { margin: 0; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .frame { width: min(1240px, 100% - 2 * var(--gutter)); margin-inline: auto; }
+
+    .masthead { background: var(--paper); }
+    .masthead .frame {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .logo { width: 77px; height: auto; }
+    .site-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      gap: 8px;
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .site-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      align-items: end;
+      gap: 24px 56px;
+      padding-block: clamp(36px, 6vw, 86px) clamp(28px, 4vw, 48px);
+    }
+    h1 {
+      font-size: clamp(2.45rem, 6.2vw, 5.15rem);
+      font-weight: 700;
+      letter-spacing: -.065em;
+      line-height: .98;
+    }
+    .intro p { max-width: 37ch; color: var(--muted); font-size: clamp(1rem, 1.65vw, 1.25rem); }
+    .showcase, .other-demos { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .demo {
+      display: block;
+      height: 100%;
+      text-decoration: none;
+      transition: background-color 180ms ease, color 180ms ease;
+    }
+    .showcase .demo { display: grid; grid-template-rows: auto 1fr; background: var(--paper); }
+    .picture {
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 2.3;
+      background: var(--pale);
+    }
+    .picture img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+    .picture-voya img { object-position: top; }
+    .picture-care img { height: auto; transform: translateY(-12.25%); }
+    .demo-copy {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-content: start;
+      align-items: start;
+      gap: 8px 12px;
+      padding: clamp(18px, 2.5vw, 30px);
+    }
+    h2, h3 { font-weight: 700; line-height: 1.13; letter-spacing: -.035em; }
+    h2 { font-size: clamp(1.45rem, 2.4vw, 2rem); }
+    h3 { font-size: clamp(1.2rem, 2vw, 1.55rem); }
+    .demo-copy p { grid-column: 1; color: var(--muted); }
+    .arrow {
+      display: grid;
+      min-width: 44px;
+      min-height: 44px;
+      place-items: center;
+      color: var(--blue);
+      background: var(--pale);
+      font-size: 1.15rem;
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+    .demo:hover, .showcase .demo:hover { background: var(--pale); }
+    .demo:hover .arrow { color: var(--paper); background: var(--blue); }
+
+    .more { margin-top: clamp(34px, 5vw, 62px); padding-bottom: clamp(36px, 6vw, 78px); }
+    .more h2 { margin-bottom: 16px; }
+    .other-demos .demo { background: var(--pale); }
+    .other-demos .arrow { background: var(--paper); }
+    .other-demos .demo:hover { background: #dce8f5; }
+    .other-demos .demo:hover .arrow { background: var(--blue); }
+
+    @media (max-width: 800px) {
+      .intro { grid-template-columns: 1fr; gap: 16px; }
+      .demo-copy { padding: 18px; }
+      .arrow { min-width: 36px; min-height: 36px; }
+    }
+
+    @media (max-width: 620px) {
+      .showcase, .other-demos { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="frame">
+      <img class="logo" src="https://dhisoft.in/images/dhisoft-logo.png" width="625" height="451" alt="DHISOFT">
+      <a class="site-link" href="https://dhisoft.in/">DHISOFT website <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main class="frame">
+    <div class="intro">
+      <h1>Live project demos</h1>
+      <p>Explore the booking engines, vendor portals, and workflow software we build for real operations.</p>
+    </div>
+
+    <div class="showcase">
+      <article>
+        <a class="demo" href="/voya/" aria-labelledby="voya-name" aria-describedby="voya-summary">
+          <span class="picture picture-voya"><img src="https://dhisoft.in/images/projects/voya-vendor-console.jpg" width="1280" height="800" alt=""></span>
+          <div class="demo-copy">
+            <h2 id="voya-name">Voya Vendor Portal</h2>
+            <span class="arrow" aria-hidden="true">↗</span>
+            <p id="voya-summary">Manage tour listings, availability, and bookings.</p>
+          </div>
+        </a>
+      </article>
+      <article>
+        <a class="demo" href="/rainwood" aria-labelledby="rainwood-name" aria-describedby="rainwood-summary">
+          <span class="picture"><img src="https://dhisoft.in/images/projects/rainwood-direct-booking.jpg" width="1280" height="800" alt=""></span>
+          <div class="demo-copy">
+            <h2 id="rainwood-name">RainWood Hotels</h2>
+            <span class="arrow" aria-hidden="true">↗</span>
+            <p id="rainwood-summary">Search room availability and explore direct hotel booking.</p>
+          </div>
+        </a>
+      </article>
+      <article>
+        <a class="demo" href="/ywc/" aria-labelledby="care-name" aria-describedby="care-summary">
+          <span class="picture picture-care"><img src="https://dhisoft.in/images/projects/yes-we-care.jpg" width="1280" height="720" alt=""></span>
+          <div class="demo-copy">
+            <h2 id="care-name">Yes We Care</h2>
+            <span class="arrow" aria-hidden="true">↗</span>
+            <p id="care-summary">Explore home care, hospital support, and assistance requests.</p>
+          </div>
+        </a>
+      </article>
+    </div>
+
+    <section class="more" aria-labelledby="more-title">
+      <h2 id="more-title">More demos</h2>
+      <div class="other-demos">
+        <a class="demo demo-copy" href="/holidaypro" aria-labelledby="holidaypro-name" aria-describedby="holidaypro-summary">
+          <h3 id="holidaypro-name">HolidayPro</h3>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="holidaypro-summary">Find trips and request a travel quote.</p>
+        </a>
+        <a class="demo demo-copy" href="/uwa/" aria-labelledby="mortgage-name" aria-describedby="mortgage-summary">
+          <h3 id="mortgage-name">Mortgage UWA</h3>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="mortgage-summary">Explore a mortgage underwriting workspace.</p>
+        </a>
+        <a class="demo demo-copy" href="/rural" aria-labelledby="rural-name" aria-describedby="rural-summary">
+          <h3 id="rural-name">Rural Skill OS</h3>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="rural-summary">Open the sign-in page for training and placement workflows.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
