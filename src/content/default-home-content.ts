@@ -183,7 +183,7 @@ export const defaultHomeContent: HomeContent = {
         eyebrow: "Travel & hospitality",
         category: "Transactional platform",
         shortDescription:
-          "Search rooms by date and occupancy, check live availability, and book directly.",
+          "Find available RainWood rooms by date and occupancy, then book online.",
         description:
           "Availability, occupancy-aware pricing, holds, reservations, payments, webhooks, vouchers, cancellations and inventory restoration.",
         visual: "rainwood",
