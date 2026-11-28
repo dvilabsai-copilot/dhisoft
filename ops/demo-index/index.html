@@ -25,7 +25,7 @@
     img { display: block; }
     h1, h2, h3, p { margin: 0; }
     a { color: inherit; }
-    a:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    :is(a, button):focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
     .frame { width: min(1240px, 100% - 2 * var(--gutter)); margin-inline: auto; }
 
     .masthead { background: var(--paper); }
@@ -105,6 +105,45 @@
     .demo:hover, .showcase .demo:hover { background: var(--pale); }
     .demo:hover .arrow { color: var(--paper); background: var(--blue); }
 
+    .bizdiary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2.15fr);
+      align-items: center;
+      margin-top: clamp(34px, 5vw, 62px);
+      background: var(--paper);
+    }
+    .bizdiary-copy { padding: clamp(20px, 3.5vw, 46px); }
+    .bizdiary-copy h2 { font-size: clamp(2rem, 3vw, 3rem); }
+    .bizdiary-copy p { max-width: 36ch; margin-top: 12px; color: var(--muted); }
+    .bizdiary-copy .site-link { margin-top: 14px; }
+    .bizdiary-preview { min-width: 0; margin: 0; background: var(--pale); }
+    .bizdiary-preview img { width: 100%; height: auto; }
+    .bizdiary-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px 12px;
+      min-height: 60px;
+      padding: 8px 14px;
+    }
+    .bizdiary-caption { font-size: .9375rem; font-weight: 700; }
+    .bizdiary-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bizdiary-controls button {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 0;
+      background: var(--paper);
+      color: var(--blue);
+      font: inherit;
+      font-size: .875rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .bizdiary-controls button:hover { color: var(--paper); background: var(--blue); }
+    .bizdiary [hidden] { display: none; }
+
     .more { margin-top: clamp(34px, 5vw, 62px); padding-bottom: clamp(36px, 6vw, 78px); }
     .more h2 { margin-bottom: 16px; }
     .other-demos .demo { background: var(--pale); }
@@ -114,6 +153,7 @@
 
     @media (max-width: 800px) {
       .intro { grid-template-columns: 1fr; gap: 16px; }
+      .bizdiary { grid-template-columns: 1fr; }
       .demo-copy { padding: 18px; }
       .arrow { min-width: 36px; min-height: 36px; }
     }
@@ -173,6 +213,28 @@
       </article>
     </div>
 
+    <section class="bizdiary" id="bizdiary" aria-labelledby="bizdiary-title">
+      <div class="bizdiary-copy">
+        <h2 id="bizdiary-title">BizDiary</h2>
+        <p>A workspace for independent professionals to manage contacts, track follow-ups, and keep a daily activity diary.</p>
+        <a class="site-link" href="/bizdiary/">Open BizDiary demo <span aria-hidden="true">↗</span></a>
+      </div>
+      <figure class="bizdiary-preview" aria-label="BizDiary screenshot slideshow">
+        <img data-slide="Dashboard" src="screenshots/bizdiary-dashboard.webp" width="1120" height="630" loading="lazy" alt="BizDiary dashboard with daily priorities, activity totals, and quick actions.">
+        <img data-slide="People" src="screenshots/bizdiary-people.webp" width="1120" height="630" loading="lazy" alt="People screen with a sample contact list, pipeline filters, and upcoming follow-up dates." hidden>
+        <img data-slide="Follow-ups" src="screenshots/bizdiary-follow-ups.webp" width="1120" height="630" loading="lazy" alt="Follow-ups screen with pending tasks, due dates, priorities, and completion controls." hidden>
+        <img data-slide="Diary" src="screenshots/bizdiary-diary.webp" width="1120" height="630" loading="lazy" alt="Diary screen showing a dated timeline of example learning and business activity." hidden>
+        <figcaption class="bizdiary-toolbar">
+          <span class="bizdiary-caption" aria-live="polite" aria-atomic="true">Dashboard · 1 of 4</span>
+          <div class="bizdiary-controls" aria-label="Slideshow controls" role="group" hidden>
+            <button type="button" data-previous>Previous</button>
+            <button type="button" data-play>Play</button>
+            <button type="button" data-next>Next</button>
+          </div>
+        </figcaption>
+      </figure>
+    </section>
+
     <section class="more" aria-labelledby="more-title">
       <h2 id="more-title">More demos</h2>
       <div class="other-demos">
@@ -194,5 +256,64 @@
       </div>
     </section>
   </main>
+  <script>
+    const preview = document.querySelector('.bizdiary-preview');
+    const slides = Array.from(preview.querySelectorAll('[data-slide]'));
+    const controls = preview.querySelector('.bizdiary-controls');
+    const caption = preview.querySelector('.bizdiary-caption');
+    const play = controls.querySelector('[data-play]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let current = 0;
+    let timer = null;
+
+    function moveSlide(offset) {
+      slides[current].hidden = true;
+      current = (current + offset + slides.length) % slides.length;
+      slides[current].hidden = false;
+      caption.textContent = `${slides[current].dataset.slide} · ${current + 1} of ${slides.length}`;
+    }
+
+    function pauseSlides() {
+      if (timer === null) return;
+      clearInterval(timer);
+      timer = null;
+      play.textContent = 'Play';
+      caption.setAttribute('aria-live', 'polite');
+    }
+
+    controls.querySelector('[data-previous]').addEventListener('click', () => {
+      pauseSlides();
+      moveSlide(-1);
+    });
+    controls.querySelector('[data-next]').addEventListener('click', () => {
+      pauseSlides();
+      moveSlide(1);
+    });
+    play.addEventListener('click', () => {
+      if (timer !== null) {
+        pauseSlides();
+        return;
+      }
+      caption.setAttribute('aria-live', 'off');
+      play.textContent = 'Pause';
+      timer = setInterval(() => moveSlide(1), 5000);
+    });
+
+    function syncPlaybackControl() {
+      if (reducedMotion.matches) pauseSlides();
+      play.hidden = reducedMotion.matches;
+    }
+
+    preview.addEventListener('pointerenter', pauseSlides);
+    preview.addEventListener('focusin', event => {
+      if (event.target !== play) pauseSlides();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) pauseSlides();
+    });
+    reducedMotion.addEventListener('change', syncPlaybackControl);
+    syncPlaybackControl();
+    controls.hidden = false;
+  </script>
 </body>
 </html>

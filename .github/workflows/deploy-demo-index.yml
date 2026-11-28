@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'ops/demo-index/index.html'
+      - 'ops/demo-index/**'
       - '.github/workflows/deploy-demo-index.yml'
   workflow_dispatch:
 
@@ -32,10 +32,10 @@ jobs:
           DEPLOY_KEY: ${{ secrets.DHISOFT_DEMO_INDEX_SSH_KEY }}
         run: |
           set -euo pipefail
-          index=ops/demo-index/index.html
-          checked_out_blob="$(git rev-parse "HEAD:$index")"
-          main_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$index?ref=main" --jq .sha)"
-          if [[ "$checked_out_blob" != "$main_blob" ]]; then
+          checked_out_tree="$(git rev-parse HEAD:ops/demo-index)"
+          main_tree="$(gh api "repos/$GITHUB_REPOSITORY/git/trees/main?recursive=1" --jq '.tree[] | select(.path == "ops/demo-index") | .sha')"
+          test -n "$main_tree"
+          if [[ "$checked_out_tree" != "$main_tree" ]]; then
             echo 'A newer demo index is available on main. Skipping this older version.'
             exit 0
           fi
@@ -46,6 +46,8 @@ jobs:
           trap 'rm -rf -- "$ssh_dir"' EXIT
           printf '%s\n' "$DEPLOY_KEY" | tr -d '\r' > "$ssh_dir/key"
           printf '%s\n' '189.72.156.212 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHd537bqKbawb+/Gm0tZdF8KFcorPOWVHujQVrUQOAZ' > "$ssh_dir/known_hosts"
+          index="$ssh_dir/index.html"
+          python3 ops/demo-index/render.py "$index"
           digest="$(sha256sum "$index" | cut -d ' ' -f 1)"
           {
             printf '%s\n' "$digest"
@@ -57,4 +59,4 @@ jobs:
 
           curl --fail --silent --show-error --retry 2 --max-time 15 https://demo.dhisoft.in/ -o "$ssh_dir/live-index"
           cmp "$index" "$ssh_dir/live-index"
-          echo 'The live demo index matches the deployed source.'
+          echo 'The live demo index matches the rendered source.'
