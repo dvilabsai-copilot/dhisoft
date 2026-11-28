@@ -23,10 +23,43 @@ export async function getHomeResponse(): Promise<PublicHomeResponse> {
     if (isPublicHomeResponse(payload)) {
       // Older published documents predate the portfolio model and would otherwise
       // make the redesigned site silently regress to the travel-only homepage.
-      if (!payload.content.portfolio) {
+           if (!payload.content.portfolio) {
         return { ...payload, content: defaultHomeContent };
       }
-      return payload;
+
+      const existingProjects =
+        payload.content.portfolio.projects;
+
+      const existingKeys = new Set(
+        existingProjects.map((project) => project.key)
+      );
+
+      const newProjectKeys = new Set([
+        'bizdiary',
+        'giver',
+      ]);
+
+      const missingProjects = (
+        defaultHomeContent.portfolio?.projects ?? []
+      ).filter(
+        (project) =>
+          newProjectKeys.has(project.key) &&
+          !existingKeys.has(project.key)
+      );
+
+      return {
+        ...payload,
+        content: {
+          ...payload.content,
+          portfolio: {
+            ...payload.content.portfolio,
+            projects: [
+              ...existingProjects,
+              ...missingProjects,
+            ],
+          },
+        },
+      };
     }
     console.warn('CMS homepage response failed validation; using fallback content.');
   } catch (error) {
