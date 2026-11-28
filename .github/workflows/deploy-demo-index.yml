@@ -48,15 +48,26 @@ jobs:
           printf '%s\n' '189.72.156.212 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHd537bqKbawb+/Gm0tZdF8KFcorPOWVHujQVrUQOAZ' > "$ssh_dir/known_hosts"
           index="$ssh_dir/index.html"
           python3 ops/demo-index/render.py "$index"
-          digest="$(sha256sum "$index" | cut -d ' ' -f 1)"
-          {
-            printf '%s\n' "$digest"
-            cat "$index"
-          } | ssh -T -i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes \
-            -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts" \
-            -o ConnectTimeout=15 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
-            dhisoft-demo-index-ci@189.72.156.212
+          origin=https://demo.dhisoft.in
+          publish() {
+            local source="$1" format="${2:-}" digest
+            digest="$(sha256sum "$source" | cut -d ' ' -f 1)"
+            { printf '%s%s\n' "$digest" "$format"; cat "$source"; } |
+              ssh -T -i "$ssh_dir/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+                -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$ssh_dir/known_hosts" \
+                -o ConnectTimeout=15 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
+                dhisoft-demo-index-ci@189.72.156.212
+          }
 
-          curl --fail --silent --show-error --retry 2 --max-time 15 https://demo.dhisoft.in/ -o "$ssh_dir/live-index"
+          shopt -s nullglob
+          for screenshot in "$ssh_dir"/demo-screenshots/*.webp; do
+            url="$origin/demo-screenshots/${screenshot##*/}"
+            publish "$screenshot" ' webp'
+            curl --fail --silent --show-error --retry 2 --max-time 15 "$url" -o "$ssh_dir/live-screenshot"
+            cmp "$screenshot" "$ssh_dir/live-screenshot"
+          done
+          publish "$index"
+
+          curl --fail --silent --show-error --retry 2 --max-time 15 "$origin/" -o "$ssh_dir/live-index"
           cmp "$index" "$ssh_dir/live-index"
           echo 'The live demo index matches the rendered source.'

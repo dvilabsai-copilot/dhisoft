@@ -69,16 +69,13 @@
       text-decoration: none;
       transition: background-color 180ms ease, color 180ms ease;
     }
-    .showcase .demo { display: grid; grid-template-rows: auto 1fr; background: var(--paper); }
     .picture {
       display: block;
       overflow: hidden;
       aspect-ratio: 2.3;
       background: var(--pale);
     }
-    .picture img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
-    .picture-voya img { object-position: top; }
-    .picture-care img { height: auto; transform: translateY(-12.25%); }
+    .picture img { width: 100%; height: 100%; object-fit: cover; }
     .demo-copy {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -105,44 +102,28 @@
     .demo:hover, .showcase .demo:hover { background: var(--pale); }
     .demo:hover .arrow { color: var(--paper); background: var(--blue); }
 
-    .bizdiary {
+    .showcase { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 1fr; }
+    .project-demo {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2.15fr);
-      align-items: center;
-      margin-top: clamp(34px, 5vw, 62px);
+      grid-template-rows: auto 1fr;
+      min-width: 0;
       background: var(--paper);
+      scroll-margin-top: 18px;
     }
-    .bizdiary-copy { padding: clamp(20px, 3.5vw, 46px); }
-    .bizdiary-copy h2 { font-size: clamp(2rem, 3vw, 3rem); }
-    .bizdiary-copy p { max-width: 36ch; margin-top: 12px; color: var(--muted); }
-    .bizdiary-copy .site-link { margin-top: 14px; }
-    .bizdiary-preview { min-width: 0; margin: 0; background: var(--pale); }
-    .bizdiary-preview img { width: 100%; height: auto; }
-    .bizdiary-toolbar {
+    .project-demo h2 { font-size: clamp(1.25rem, 1.85vw, 1.65rem); }
+    .demo-preview { min-width: 0; margin: 0; background: var(--pale); }
+    .slide-toolbar {
+      min-height: 38px;
+      padding: 7px 12px;
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 6px 12px;
-      min-height: 60px;
-      padding: 8px 14px;
     }
-    .bizdiary-caption { font-size: .9375rem; font-weight: 700; }
-    .bizdiary-controls { display: flex; flex-wrap: wrap; gap: 8px; }
-    .bizdiary-controls button {
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0 12px;
-      border: 0;
-      background: var(--paper);
-      color: var(--blue);
-      font: inherit;
-      font-size: .875rem;
-      font-weight: 700;
-      cursor: pointer;
+    .slide-caption { font-size: .875rem; font-weight: 700; }
+    .showcase [hidden] { display: none; }
+
+    @media (max-width: 1060px) {
+      .showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    .bizdiary-controls button:hover { color: var(--paper); background: var(--blue); }
-    .bizdiary [hidden] { display: none; }
 
     .more { margin-top: clamp(34px, 5vw, 62px); padding-bottom: clamp(36px, 6vw, 78px); }
     .more h2 { margin-bottom: 16px; }
@@ -153,7 +134,6 @@
 
     @media (max-width: 800px) {
       .intro { grid-template-columns: 1fr; gap: 16px; }
-      .bizdiary { grid-template-columns: 1fr; }
       .demo-copy { padding: 18px; }
       .arrow { min-width: 36px; min-height: 36px; }
     }
@@ -180,60 +160,80 @@
       <p>Explore the booking engines, vendor portals, and workflow software we build for real operations.</p>
     </div>
 
-    <div class="showcase">
-      <article>
-        <a class="demo" href="/voya/" aria-labelledby="voya-name" aria-describedby="voya-summary">
-          <span class="picture picture-voya"><img src="https://dhisoft.in/images/projects/voya-vendor-console.jpg" width="1280" height="800" alt=""></span>
-          <div class="demo-copy">
-            <h2 id="voya-name">Voya Vendor Portal</h2>
-            <span class="arrow" aria-hidden="true">↗</span>
-            <p id="voya-summary">Manage tour listings, availability, and bookings.</p>
+    <div class="showcase" aria-label="Featured demos">
+      <article class="project-demo" id="voya" aria-labelledby="voya-name">
+        <figure class="demo-preview" data-slideshow aria-label="Voya Vendor Portal screenshot slideshow">
+          <div class="picture">
+            <img data-slide="Partner Hub" src="screenshots/voya-welcome.webp" width="1120" height="487" alt="Public Voya Partner Hub welcome page for tour and attraction vendors.">
+            <img data-slide="Product catalogue" src="screenshots/voya-catalogue.webp" width="1120" height="487" loading="lazy" alt="Voya vendor catalogue with product filters, status, and listing actions." hidden>
+            <img data-slide="Product builder" src="screenshots/voya-product-builder.webp" width="1120" height="487" loading="lazy" alt="Voya product builder with experience types and listing fields." hidden>
+            <img data-slide="Bulk upload" src="screenshots/voya-bulk-upload.webp" width="1120" height="487" loading="lazy" alt="Voya bulk upload workflow with template, upload, and review steps." hidden>
           </div>
+          <figcaption class="slide-toolbar">
+            <span class="slide-caption">Partner Hub · 1 of 4</span>
+          </figcaption>
+        </figure>
+        <a class="demo demo-copy" href="/voya/" aria-labelledby="voya-name" aria-describedby="voya-summary">
+          <h2 id="voya-name">Voya Vendor Portal</h2>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="voya-summary">Manage tour listings, availability, and bookings.</p>
         </a>
       </article>
-      <article>
-        <a class="demo" href="/rainwood" aria-labelledby="rainwood-name" aria-describedby="rainwood-summary">
-          <span class="picture"><img src="https://dhisoft.in/images/projects/rainwood-direct-booking.jpg" width="1280" height="800" alt=""></span>
-          <div class="demo-copy">
-            <h2 id="rainwood-name">RainWood Hotels</h2>
-            <span class="arrow" aria-hidden="true">↗</span>
-            <p id="rainwood-summary">Search room availability and explore direct hotel booking.</p>
+      <article class="project-demo" id="rainwood" aria-labelledby="rainwood-name">
+        <figure class="demo-preview" data-slideshow aria-label="RainWood Hotels screenshot slideshow">
+          <div class="picture">
+            <img data-slide="Stay search" src="screenshots/rainwood-home.webp" width="1120" height="487" alt="RainWood home page with a hotel and date search form.">
+            <img data-slide="Hotel catalogue" src="screenshots/rainwood-hotels.webp" width="1120" height="487" loading="lazy" alt="RainWood hotel catalogue with property cards and availability links." hidden>
+            <img data-slide="Property details" src="screenshots/rainwood-property.webp" width="1120" height="487" loading="lazy" alt="RainWood Aurum Kodaikanal property page with exterior and room photos." hidden>
+            <img data-slide="Booking" src="screenshots/rainwood-booking.webp" width="1120" height="487" loading="lazy" alt="RainWood booking flow with stay criteria and a reservation step tracker." hidden>
           </div>
+          <figcaption class="slide-toolbar">
+            <span class="slide-caption">Stay search · 1 of 4</span>
+          </figcaption>
+        </figure>
+        <a class="demo demo-copy" href="/rainwood" aria-labelledby="rainwood-name" aria-describedby="rainwood-summary">
+          <h2 id="rainwood-name">RainWood Hotels</h2>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="rainwood-summary">Search room availability and explore direct hotel booking.</p>
         </a>
       </article>
-      <article>
-        <a class="demo" href="/ywc/" aria-labelledby="care-name" aria-describedby="care-summary">
-          <span class="picture picture-care"><img src="https://dhisoft.in/images/projects/yes-we-care.jpg" width="1280" height="720" alt=""></span>
-          <div class="demo-copy">
-            <h2 id="care-name">Yes We Care</h2>
-            <span class="arrow" aria-hidden="true">↗</span>
-            <p id="care-summary">Explore home care, hospital support, and assistance requests.</p>
+      <article class="project-demo" id="yes-we-care" aria-labelledby="yes-we-care-name">
+        <figure class="demo-preview" data-slideshow aria-label="Yes We Care screenshot slideshow">
+          <div class="picture">
+            <img data-slide="Care overview" src="screenshots/care-home.webp" width="1120" height="487" alt="Yes We Care home page introducing care coordination and services.">
+            <img data-slide="Care services" src="screenshots/care-services.webp" width="1120" height="487" loading="lazy" alt="Yes We Care services page with care options for families." hidden>
+            <img data-slide="Corporate care" src="screenshots/care-corporate.webp" width="1120" height="487" loading="lazy" alt="Yes We Care corporate care page introducing employee and family support." hidden>
+            <img data-slide="Assistance request" src="screenshots/care-assistance.webp" width="1120" height="487" loading="lazy" alt="Yes We Care assistance request form with contact and support fields." hidden>
           </div>
+          <figcaption class="slide-toolbar">
+            <span class="slide-caption">Care overview · 1 of 4</span>
+          </figcaption>
+        </figure>
+        <a class="demo demo-copy" href="/ywc/" aria-labelledby="yes-we-care-name" aria-describedby="yes-we-care-summary">
+          <h2 id="yes-we-care-name">Yes We Care</h2>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="yes-we-care-summary">Explore home care, hospital support, and assistance requests.</p>
+        </a>
+      </article>
+      <article class="project-demo" id="bizdiary" aria-labelledby="bizdiary-name">
+        <figure class="demo-preview" data-slideshow aria-label="BizDiary screenshot slideshow">
+          <div class="picture">
+            <img data-slide="Dashboard" src="screenshots/bizdiary-dashboard.webp" width="1120" height="487" alt="BizDiary dashboard with sample daily priorities and quick actions.">
+            <img data-slide="People" src="screenshots/bizdiary-people.webp" width="1120" height="487" loading="lazy" alt="BizDiary People screen with fictional contacts and follow-up dates." hidden>
+            <img data-slide="Follow-ups" src="screenshots/bizdiary-follow-ups.webp" width="1120" height="487" loading="lazy" alt="BizDiary Follow-ups screen with example tasks and priorities." hidden>
+            <img data-slide="Diary" src="screenshots/bizdiary-diary.webp" width="1120" height="487" loading="lazy" alt="BizDiary Diary screen with a dated timeline of sample activity." hidden>
+          </div>
+          <figcaption class="slide-toolbar">
+            <span class="slide-caption">Dashboard · 1 of 4</span>
+          </figcaption>
+        </figure>
+        <a class="demo demo-copy" href="/bizdiary/" aria-labelledby="bizdiary-name" aria-describedby="bizdiary-summary">
+          <h2 id="bizdiary-name">BizDiary</h2>
+          <span class="arrow" aria-hidden="true">↗</span>
+          <p id="bizdiary-summary">Manage contacts, follow-ups, and a daily activity diary.</p>
         </a>
       </article>
     </div>
-
-    <section class="bizdiary" id="bizdiary" aria-labelledby="bizdiary-title">
-      <div class="bizdiary-copy">
-        <h2 id="bizdiary-title">BizDiary</h2>
-        <p>A workspace for independent professionals to manage contacts, track follow-ups, and keep a daily activity diary.</p>
-        <a class="site-link" href="/bizdiary/">Open BizDiary demo <span aria-hidden="true">↗</span></a>
-      </div>
-      <figure class="bizdiary-preview" aria-label="BizDiary screenshot slideshow">
-        <img data-slide="Dashboard" src="screenshots/bizdiary-dashboard.webp" width="1120" height="630" loading="lazy" alt="BizDiary dashboard with daily priorities, activity totals, and quick actions.">
-        <img data-slide="People" src="screenshots/bizdiary-people.webp" width="1120" height="630" loading="lazy" alt="People screen with a sample contact list, pipeline filters, and upcoming follow-up dates." hidden>
-        <img data-slide="Follow-ups" src="screenshots/bizdiary-follow-ups.webp" width="1120" height="630" loading="lazy" alt="Follow-ups screen with pending tasks, due dates, priorities, and completion controls." hidden>
-        <img data-slide="Diary" src="screenshots/bizdiary-diary.webp" width="1120" height="630" loading="lazy" alt="Diary screen showing a dated timeline of example learning and business activity." hidden>
-        <figcaption class="bizdiary-toolbar">
-          <span class="bizdiary-caption" aria-live="polite" aria-atomic="true">Dashboard · 1 of 4</span>
-          <div class="bizdiary-controls" aria-label="Slideshow controls" role="group" hidden>
-            <button type="button" data-previous>Previous</button>
-            <button type="button" data-play>Play</button>
-            <button type="button" data-next>Next</button>
-          </div>
-        </figcaption>
-      </figure>
-    </section>
 
     <section class="more" aria-labelledby="more-title">
       <h2 id="more-title">More demos</h2>
@@ -257,63 +257,46 @@
     </section>
   </main>
   <script>
-    const preview = document.querySelector('.bizdiary-preview');
-    const slides = Array.from(preview.querySelectorAll('[data-slide]'));
-    const controls = preview.querySelector('.bizdiary-controls');
-    const caption = preview.querySelector('.bizdiary-caption');
-    const play = controls.querySelector('[data-play]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let current = 0;
-    let timer = null;
 
-    function moveSlide(offset) {
-      slides[current].hidden = true;
-      current = (current + offset + slides.length) % slides.length;
-      slides[current].hidden = false;
-      caption.textContent = `${slides[current].dataset.slide} · ${current + 1} of ${slides.length}`;
-    }
+    for (const slideshow of document.querySelectorAll('[data-slideshow]')) {
+      const slides = Array.from(slideshow.querySelectorAll('[data-slide]'));
+      const caption = slideshow.querySelector('.slide-caption');
+      const card = slideshow.closest('.project-demo');
+      let current = 0;
+      let timer = null;
+      let onScreen = false;
 
-    function pauseSlides() {
-      if (timer === null) return;
-      clearInterval(timer);
-      timer = null;
-      play.textContent = 'Play';
-      caption.setAttribute('aria-live', 'polite');
-    }
-
-    controls.querySelector('[data-previous]').addEventListener('click', () => {
-      pauseSlides();
-      moveSlide(-1);
-    });
-    controls.querySelector('[data-next]').addEventListener('click', () => {
-      pauseSlides();
-      moveSlide(1);
-    });
-    play.addEventListener('click', () => {
-      if (timer !== null) {
-        pauseSlides();
-        return;
+      function showSlide(offset) {
+        slides[current].hidden = true;
+        current = (current + offset + slides.length) % slides.length;
+        slides[current].hidden = false;
+        caption.textContent = `${slides[current].dataset.slide} · ${current + 1} of ${slides.length}`;
       }
-      caption.setAttribute('aria-live', 'off');
-      play.textContent = 'Pause';
-      timer = setInterval(() => moveSlide(1), 5000);
-    });
 
-    function syncPlaybackControl() {
-      if (reducedMotion.matches) pauseSlides();
-      play.hidden = reducedMotion.matches;
+      function updateAutoplay() {
+        const playing = onScreen && !reducedMotion.matches && !document.hidden &&
+          !card.matches(':hover, :focus-within');
+        if (playing && timer === null) {
+          timer = setInterval(() => showSlide(1), 5000);
+        } else if (!playing && timer !== null) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      for (const event of ['pointerenter', 'pointerleave', 'focusin', 'focusout']) {
+        card.addEventListener(event, () => setTimeout(updateAutoplay, 0));
+      }
+
+      new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        updateAutoplay();
+      }, { threshold: 0.25 }).observe(slideshow);
+
+      document.addEventListener('visibilitychange', updateAutoplay);
+      reducedMotion.addEventListener('change', updateAutoplay);
     }
-
-    preview.addEventListener('pointerenter', pauseSlides);
-    preview.addEventListener('focusin', event => {
-      if (event.target !== play) pauseSlides();
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pauseSlides();
-    });
-    reducedMotion.addEventListener('change', syncPlaybackControl);
-    syncPlaybackControl();
-    controls.hidden = false;
   </script>
 </body>
 </html>
