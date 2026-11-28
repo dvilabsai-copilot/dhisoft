@@ -183,7 +183,7 @@ export const defaultHomeContent: HomeContent = {
         eyebrow: "Travel & hospitality",
         category: "Transactional platform",
         shortDescription:
-          "A hotel booking and reservation system where inventory consistency is the product.",
+          "Search rooms by date and occupancy, check live availability, and book directly.",
         description:
           "Availability, occupancy-aware pricing, holds, reservations, payments, webhooks, vouchers, cancellations and inventory restoration.",
         visual: "rainwood",
