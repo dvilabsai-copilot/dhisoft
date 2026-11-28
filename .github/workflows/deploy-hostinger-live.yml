@@ -26,6 +26,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Test the portfolio merge
+        run: node --test ops/portfolio-sync/merge.test.cjs
+
       - name: Publish frontend on Hostinger
         env:
           GH_TOKEN: ${{ github.token }}

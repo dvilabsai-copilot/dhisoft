@@ -40,4 +40,13 @@ describe('CMS contract boundary', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ key: 'home', version: 2, publishedAt: null, content: legacy }), { status: 200 })));
     await expect(getHomeContent()).resolves.toEqual(defaultHomeContent);
   });
+
+  it('respects a deliberate project removal from the published CMS portfolio', async () => {
+    const published = structuredClone(defaultHomeContent);
+    published.portfolio!.projects = published.portfolio!.projects.filter((project) => project.key !== 'bizdiary');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      key: 'home', version: 3, publishedAt: null, content: published,
+    }), { status: 200 })));
+    await expect(getHomeContent()).resolves.toEqual(published);
+  });
 });
